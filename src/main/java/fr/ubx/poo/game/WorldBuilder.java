@@ -40,6 +40,8 @@ public class WorldBuilder {
                 return new BonusBombNbInc();
             case BombNumberDec:
                 return new BonusBombNbDec();
+            case Princess:
+                return new Princess();
             default:
                 return null;
         }
