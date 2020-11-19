@@ -7,6 +7,7 @@ package fr.ubx.poo.view.sprite;
 import static fr.ubx.poo.view.image.ImageResource.*;
 
 import fr.ubx.poo.game.Position;
+import fr.ubx.poo.model.decor.Box;
 import fr.ubx.poo.model.decor.Decor;
 import fr.ubx.poo.model.decor.Stone;
 import fr.ubx.poo.model.decor.Tree;
@@ -23,6 +24,8 @@ public final class SpriteFactory {
             return new SpriteDecor(layer, factory.get(STONE), position);
         if (decor instanceof Tree)
             return new SpriteDecor(layer, factory.get(TREE), position);
+        if(decor instanceof Box)
+            return new SpriteDecor(layer, factory.get(BOX), position);
         return null;
     }
 
