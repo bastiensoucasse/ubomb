@@ -21,7 +21,7 @@ public final class SpriteFactory {
             return new SpriteDecor(layer, factory.get(STONE), position);
         if (decor instanceof Tree)
             return new SpriteDecor(layer, factory.get(TREE), position);
-        if (decor instanceof Box)
+        if(decor instanceof Box)
             return new SpriteDecor(layer, factory.get(BOX), position);
         if (decor instanceof BonusBombNbDec)
             return new SpriteDecor(layer, factory.get(BONUS_BOMB_NB_DEC), position);
@@ -33,6 +33,10 @@ public final class SpriteFactory {
             return new SpriteDecor(layer, factory.get(BONUS_BOMB_RANGE_INC), position);
         if (decor instanceof Princess)
             return new SpriteDecor(layer, factory.get(PRINCESS), position);
+        if(decor instanceof Key)
+            return new SpriteDecor(layer, factory.get(KEY), position);
+        if(decor instanceof Monster)
+            return new SpriteDecor(layer, factory.get(MONSTER_DOWN), position);
         return null;
     }
 

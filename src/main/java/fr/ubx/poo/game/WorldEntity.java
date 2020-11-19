@@ -23,7 +23,7 @@ public enum WorldEntity {
     BombRangeInc('>'),
     BombRangeDec('<'),
     BombNumberInc('+'),
-    BombNumberDec('-')
+    BombNumberDec('-'),
         ;
 
 
