@@ -5,6 +5,7 @@
 package fr.ubx.poo.game;
 
 import fr.ubx.poo.model.decor.Decor;
+import fr.ubx.poo.model.go.character.Monster;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.function.BiConsumer;
 
 public class World {
     private final Map<Position, Decor> grid;
+    private final Map<Position, Monster> grid_monster;
     private final WorldEntity[][] raw;
     public final Dimension dimension;
 
@@ -22,6 +24,7 @@ public class World {
         this.raw = raw;
         dimension = new Dimension(raw.length, raw[0].length);
         grid = WorldBuilder.build(raw, dimension);
+        grid_monster = null;
     }
 
     public Position findPlayer() throws PositionNotFoundException {
@@ -34,12 +37,12 @@ public class World {
         }
         throw new PositionNotFoundException("Player");
     }
-
-    public List<Position> findMonster() throws PositionNotFoundException{
+    public List<Position> findMonster() throws PositionNotFoundException {
         List<Position> position_of_monsters = new ArrayList<Position>();
         for (int x = 0; x < dimension.width; x++) {
             for (int y = 0; y < dimension.height; y++) {
                 if (raw[y][x] == WorldEntity.Monster) {
+                    raw[y][x].ordinal();
                     position_of_monsters.add(new Position(x, y));
                 }
             }
