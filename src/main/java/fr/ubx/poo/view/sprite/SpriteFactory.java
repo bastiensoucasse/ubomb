@@ -37,7 +37,7 @@ public final class SpriteFactory {
             return new SpriteDecor(layer, factory.get(KEY), position);
         if(decor instanceof Monster)
             return new SpriteDecor(layer, factory.get(MONSTER_DOWN), position);
-        return null;
+        throw new RuntimeException("Unsupported sprite for decor " + decor);
     }
 
     public static Sprite createPlayer(Pane layer, Player player) {
