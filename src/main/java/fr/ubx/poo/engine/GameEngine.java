@@ -5,6 +5,9 @@
 package fr.ubx.poo.engine;
 
 import fr.ubx.poo.game.Direction;
+import fr.ubx.poo.game.Position;
+import fr.ubx.poo.game.PositionNotFoundException;
+import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.view.sprite.Sprite;
 import fr.ubx.poo.view.sprite.SpriteFactory;
 import fr.ubx.poo.game.Game;
@@ -68,6 +71,14 @@ public final class GameEngine {
         statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
         // Create decor sprites
         game.getWorld().forEach( (pos,d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
+        try {
+            List<Position> pos_of_monster = game.getWorld().findMonster();
+            for(Position pos : pos_of_monster){
+                sprites.add(SpriteFactory.createMonster(layer, new Monster(game, pos)));
+            }
+        } catch (PositionNotFoundException e) {
+            e.printStackTrace();
+        }
         spritePlayer = SpriteFactory.createPlayer(layer, player);
 
     }
@@ -146,6 +157,7 @@ public final class GameEngine {
         sprites.forEach(Sprite::render);
         // last rendering to have player in the foreground
         spritePlayer.render();
+
     }
 
     public void start() {

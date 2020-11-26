@@ -8,6 +8,7 @@ import static fr.ubx.poo.view.image.ImageResource.*;
 
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.decor.*;
+import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.model.go.character.Player;
 import fr.ubx.poo.view.image.ImageFactory;
 import javafx.scene.layout.Pane;
@@ -35,12 +36,14 @@ public final class SpriteFactory {
             return new SpriteDecor(layer, factory.get(PRINCESS), position);
         if(decor instanceof Key)
             return new SpriteDecor(layer, factory.get(KEY), position);
-        if(decor instanceof Monster)
-            return new SpriteDecor(layer, factory.get(MONSTER_DOWN), position);
         throw new RuntimeException("Unsupported sprite for decor " + decor);
     }
 
     public static Sprite createPlayer(Pane layer, Player player) {
         return new SpritePlayer(layer, player);
+    }
+
+    public static Sprite createMonster(Pane layer, Monster monster){
+        return new SpriteMonster(layer, monster);
     }
 }
