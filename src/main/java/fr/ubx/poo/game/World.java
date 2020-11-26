@@ -42,12 +42,15 @@ public class World {
         for (int x = 0; x < dimension.width; x++) {
             for (int y = 0; y < dimension.height; y++) {
                 if (raw[y][x] == WorldEntity.Monster) {
-                    raw[y][x].ordinal();
                     position_of_monsters.add(new Position(x, y));
                 }
             }
         }
         return position_of_monsters;
+    }
+
+    boolean isThereAMonster(Position pos){
+        return raw[pos.x][pos.y] == WorldEntity.Monster;
     }
 
     public Decor get(Position position) {
