@@ -49,8 +49,8 @@ public class World {
         return position_of_monsters;
     }
 
-    boolean isThereAMonster(Position pos){
-        return raw[pos.x][pos.y] == WorldEntity.Monster;
+    public boolean isThereAMonster(Position pos){
+        return raw[pos.y][pos.x] == WorldEntity.Monster;
     }
 
     public Decor get(Position position) {

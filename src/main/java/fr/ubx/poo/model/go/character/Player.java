@@ -22,7 +22,7 @@ import static fr.ubx.poo.game.WorldEntity.Key;
 
 public class Player extends GameObject implements Movable {
 
-    private final boolean alive = true;
+    private boolean alive = true;
     Direction direction;
     private boolean moveRequested = false;
     private int lives = 1;
@@ -66,10 +66,17 @@ public class Player extends GameObject implements Movable {
     }
 
     public void update(long now) {
-        if (moveRequested) {
-            if (canMove(direction)) {
-                doMove(direction);
-            }
+        if (moveRequested && canMove(direction)) {
+            doMove(direction);
+
+            if (game.getWorld().get(getPosition()) instanceof Princess)
+                winner = true;
+
+            if (game.getWorld().isThereAMonster(getPosition()))
+                lives--;
+
+            if (lives == 0)
+                alive = false;
         }
         moveRequested = false;
     }
