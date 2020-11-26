@@ -7,8 +7,13 @@ package fr.ubx.poo.model.go.character;
 import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.Movable;
+import fr.ubx.poo.model.decor.Decor;
 import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.game.Game;
+import javafx.geometry.Pos;
+
+import java.util.Iterator;
+import java.util.Map;
 
 public class Player extends GameObject implements Movable {
 
@@ -40,7 +45,16 @@ public class Player extends GameObject implements Movable {
     }
 
     @Override
-    public boolean canMove(Direction direction) {
+    public boolean canMove(Direction direction)
+    {
+        Position nextPos = direction.nextPosition(getPosition());
+
+        if (!nextPos.inside(game.getWorld().dimension))
+            return false;
+
+        if (game.getWorld().get(nextPos) != null)
+            return false;
+
         return true;
     }
 
