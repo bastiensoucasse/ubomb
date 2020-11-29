@@ -8,11 +8,14 @@ import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.Movable;
 import fr.ubx.poo.model.decor.*;
+import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.game.Game;
 import javafx.geometry.Pos;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import static fr.ubx.poo.game.WorldEntity.Key;
@@ -25,7 +28,7 @@ public class Player extends GameObject implements Movable {
     private int lives = 1;
     private boolean winner;
     private int keys = 0;
-    private int nb_bombs = 0;
+    private List<Bomb> bombs = new ArrayList<Bomb>();
 
     public Player(Game game, Position position) {
         super(game, position);
@@ -77,11 +80,23 @@ public class Player extends GameObject implements Movable {
                 this.keys++;
             }
             if(game.getWorld().get(getPosition()) instanceof BonusBombNbInc){
-                this.nb_bombs++;
+                bombs.add(new Bomb(this.game, getPosition()));
             }
             if(game.getWorld().get(getPosition()) instanceof BonusBombNbDec){
-                if(nb_bombs > 0)
-                    this.nb_bombs--;
+                if(getBombs() > 0)
+                    bombs.remove(bombs.size()-1);
+
+            }
+            if(game.getWorld().get(getPosition()) instanceof BonusBombRangeInc){
+                for(Bomb b : bombs){
+                    b.incRange();
+                }
+            }
+            if(game.getWorld().get(getPosition()) instanceof BonusBombRangeDec){
+                for(Bomb b : bombs){
+                    if(b.getRange() >= 2)
+                        b.decRange();
+                }
             }
             if (lives == 0)
                 alive = false;
@@ -91,7 +106,9 @@ public class Player extends GameObject implements Movable {
 
     public int getKeys(){return keys;}
 
-    public int getBombs(){return nb_bombs;}
+    public int getBombs(){return bombs.size();}
+
+    public int getBomb_range(){return bombs.get(getBombs()-1).getRange();}
 
     public boolean isWinner() {
         return winner;
