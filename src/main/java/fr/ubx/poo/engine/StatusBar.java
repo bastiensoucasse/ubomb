@@ -86,6 +86,9 @@ public class StatusBar {
         keyValue.setText(String.valueOf(game.getPlayer().getKeys()));
         if(game.getPlayer().getBombs() > 0)
             rangeValue.setText(String.valueOf(game.getPlayer().getBomb_range()));
+        else{
+            rangeValue.setText("0");
+        }
     }
 
 }

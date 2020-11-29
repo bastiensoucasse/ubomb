@@ -142,7 +142,11 @@ public final class GameEngine {
 
     private void update(long now) {
         player.update(now);
-
+        if(game.getWorld().hasChanged())
+        {
+            game.getWorld().setChange(false);
+            clear();
+        }
         if (player.isAlive() == false) {
             gameLoop.stop();
             showMessage("Perdu!", Color.RED);
@@ -150,6 +154,20 @@ public final class GameEngine {
         if (player.isWinner()) {
             gameLoop.stop();
             showMessage("Gagné", Color.BLUE);
+        }
+    }
+
+    private void clear(){
+        sprites.forEach(Sprite::remove);
+        sprites.clear();
+        game.getWorld().forEach( (pos,d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
+        try {
+            List<Position> pos_of_monster = game.getWorld().findMonster();
+            for(Position pos : pos_of_monster){
+                sprites.add(SpriteFactory.createMonster(layer, new Monster(game, pos)));
+            }
+        } catch (PositionNotFoundException e) {
+            e.printStackTrace();
         }
     }
 

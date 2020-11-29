@@ -77,25 +77,43 @@ public class Player extends GameObject implements Movable {
             if (game.getWorld().isThereAMonster(getPosition()))
                 lives--;
             if(game.getWorld().get(getPosition()) instanceof Key){
+                game.getWorld().deleteDecor(getPosition());
+                game.getWorld().setChange(true);
                 this.keys++;
             }
             if(game.getWorld().get(getPosition()) instanceof BonusBombNbInc){
+                game.getWorld().deleteDecor(getPosition());
                 bombs.add(new Bomb(this.game, getPosition()));
+                game.getWorld().setChange(true);
             }
             if(game.getWorld().get(getPosition()) instanceof BonusBombNbDec){
-                if(getBombs() > 0)
-                    bombs.remove(bombs.size()-1);
+                if(getBombs() > 0) {
+                    game.getWorld().deleteDecor(getPosition());
+                    bombs.remove(bombs.size() - 1);
+                    game.getWorld().setChange(true);
+                }
 
             }
             if(game.getWorld().get(getPosition()) instanceof BonusBombRangeInc){
+                if(!bombs.isEmpty()){
+                    game.getWorld().deleteDecor(getPosition());
+                    game.getWorld().setChange(true);
+                }
                 for(Bomb b : bombs){
                     b.incRange();
                 }
             }
             if(game.getWorld().get(getPosition()) instanceof BonusBombRangeDec){
+                boolean has_decreased=false;
                 for(Bomb b : bombs){
-                    if(b.getRange() >= 2)
+                    if(b.getRange() >= 2) {
                         b.decRange();
+                        has_decreased=true;
+                    }
+                }
+                if (has_decreased){
+                    game.getWorld().deleteDecor(getPosition());
+                    game.getWorld().setChange(true);
                 }
             }
             if (lives == 0)
