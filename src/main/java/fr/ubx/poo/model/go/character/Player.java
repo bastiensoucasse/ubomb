@@ -11,14 +11,9 @@ import fr.ubx.poo.model.decor.*;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.game.Game;
-import javafx.geometry.Pos;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
-import static fr.ubx.poo.game.WorldEntity.Key;
 
 public class Player extends GameObject implements Movable {
 
@@ -33,7 +28,7 @@ public class Player extends GameObject implements Movable {
     public Player(Game game, Position position) {
         super(game, position);
         this.direction = Direction.S;
-        this.lives = game.getInitPlayerLives();
+        this.lives = game.getLives();
     }
 
     public int getLives() {

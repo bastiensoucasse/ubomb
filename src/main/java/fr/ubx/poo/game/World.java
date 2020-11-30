@@ -5,10 +5,7 @@
 package fr.ubx.poo.game;
 
 import fr.ubx.poo.model.decor.Decor;
-import fr.ubx.poo.model.go.GameObject;
-import fr.ubx.poo.model.go.character.Monster;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,7 +16,7 @@ public class World {
     private final Map<Position, Decor> grid;
     private final WorldEntity[][] raw;
     public final Dimension dimension;
-    private boolean HasChanged=true;
+    private boolean hasChanged = true;
 
     public World(WorldEntity[][] raw) {
         this.raw = raw;
@@ -37,6 +34,7 @@ public class World {
         }
         throw new PositionNotFoundException("Player");
     }
+
     public List<Position> findMonster() throws PositionNotFoundException {
         List<Position> position_of_monsters = new ArrayList<Position>();
         for (int x = 0; x < dimension.width; x++) {
@@ -49,7 +47,7 @@ public class World {
         return position_of_monsters;
     }
 
-    public boolean isThereAMonster(Position pos){
+    public boolean isThereAMonster(Position pos) {
         return raw[pos.y][pos.x] == WorldEntity.Monster;
     }
 
@@ -57,7 +55,7 @@ public class World {
         return grid.get(position);
     }
 
-    public void deleteDecor(Position p){
+    public void deleteDecor(Position p) {
         grid.remove(p);
     }
 
@@ -85,11 +83,11 @@ public class World {
         return grid.get(position) == null;
     }
 
-    public boolean hasChanged(){
-        return HasChanged;
+    public boolean hasChanged() {
+        return hasChanged;
     }
 
-    public void setChange(boolean b){
-        HasChanged=b;
+    public void setChange(boolean b) {
+        hasChanged = b;
     }
 }
