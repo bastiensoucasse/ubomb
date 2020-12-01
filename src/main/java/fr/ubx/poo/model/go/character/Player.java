@@ -54,7 +54,7 @@ public class Player extends GameObject implements Movable {
             return false;
 
         Decor d = game.getWorld().get(nextPos);
-        return d == null || d instanceof Bonus || d instanceof Key || d instanceof Princess;
+        return d == null || d instanceof Bonus || d instanceof Key || d instanceof Princess || d instanceof Heart;
     }
 
     public void doMove(Direction direction) {
@@ -110,6 +110,11 @@ public class Player extends GameObject implements Movable {
                     game.getWorld().deleteDecor(getPosition());
                     game.getWorld().setChange(true);
                 }
+            }
+            if(game.getWorld().get(getPosition()) instanceof Heart){
+                game.getWorld().deleteDecor(getPosition());
+                game.getWorld().setChange(true);
+                lives++;
             }
             if (lives == 0)
                 alive = false;

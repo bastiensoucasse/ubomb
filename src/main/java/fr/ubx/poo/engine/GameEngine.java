@@ -35,6 +35,7 @@ public final class GameEngine {
     private final Game game;
     private final Player player;
     private final List<Sprite> sprites = new ArrayList<>();
+    private final List<Monster> monsters = new ArrayList<>();
     private StatusBar statusBar;
     private Pane layer;
     private Input input;
@@ -74,7 +75,8 @@ public final class GameEngine {
         try {
             List<Position> pos_of_monster = game.getWorld().findMonster();
             for(Position pos : pos_of_monster){
-                sprites.add(SpriteFactory.createMonster(layer, new Monster(game, pos)));
+                monsters.add(new Monster(game, pos));
+                sprites.add(SpriteFactory.createMonster(layer,monsters.get(monsters.size() - 1)));
             }
         } catch (PositionNotFoundException e) {
             e.printStackTrace();
@@ -163,8 +165,10 @@ public final class GameEngine {
         game.getWorld().forEach( (pos,d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
         try {
             List<Position> pos_of_monster = game.getWorld().findMonster();
+            int monster = 0;
             for(Position pos : pos_of_monster){
-                sprites.add(SpriteFactory.createMonster(layer, new Monster(game, pos)));
+                sprites.add(SpriteFactory.createMonster(layer, monsters.get(monster)));
+                monster++;
             }
         } catch (PositionNotFoundException e) {
             e.printStackTrace();
