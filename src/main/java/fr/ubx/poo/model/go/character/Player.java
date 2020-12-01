@@ -51,8 +51,16 @@ public class Player extends GameObject implements Movable {
         Decor d = game.getWorld().get(nextPos);
         if (d instanceof Box) {
             Position new_pos = direction.nextPosition(nextPos);
-            if (game.getWorld().get(new_pos) == null && direction.nextPosition(nextPos).inside(game.getWorld().dimension)) {
+            //Si la new pos est vide et qu'il n'y a pas de monstre et qu'elle est bien dans la dimension du jeu
+            if(game.getWorld().get(new_pos) == null && !game.getWorld().isThereAMonster(new_pos) && direction.nextPosition(nextPos).inside(game.getWorld().dimension)){
                 return true;
+            }
+            //Cas pour les doubles caisses.
+            if(game.getWorld().get(new_pos) instanceof Box && game.getWorld().get(direction.nextPosition(new_pos)) == null
+                    && direction.nextPosition(new_pos).inside(game.getWorld().dimension) && !game.getWorld().isThereAMonster(direction.nextPosition(new_pos))){
+                game.getWorld().setNewPos(direction.nextPosition(new_pos), game.getWorld().get(new_pos));
+                game.getWorld().deleteDecor(new_pos);
+                game.getWorld().setChange(true);
             }
         }
         return d == null || d instanceof Bonus || d instanceof Key || d instanceof Princess || d instanceof Heart || d instanceof DoorPrevOpened || d instanceof DoorNextOpened;
