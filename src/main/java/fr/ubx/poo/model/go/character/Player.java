@@ -54,11 +54,22 @@ public class Player extends GameObject implements Movable {
             return false;
 
         Decor d = game.getWorld().get(nextPos);
+        if(d instanceof Box){
+            Position new_pos = direction.nextPosition(nextPos);
+            if(game.getWorld().get(new_pos) == null && direction.nextPosition(nextPos).inside(game.getWorld().dimension)){
+                return true;
+            }
+        }
         return d == null || d instanceof Bonus || d instanceof Key || d instanceof Princess || d instanceof Heart;
     }
 
     public void doMove(Direction direction) {
         Position nextPos = direction.nextPosition(getPosition());
+        if(game.getWorld().get(nextPos) instanceof Box){
+            game.getWorld().setNewPos(direction.nextPosition(nextPos), game.getWorld().get(nextPos));
+            game.getWorld().deleteDecor(nextPos);
+            game.getWorld().setChange(true);
+        }
         setPosition(nextPos);
     }
 

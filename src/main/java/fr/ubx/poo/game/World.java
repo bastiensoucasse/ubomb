@@ -55,6 +55,10 @@ public class World {
         return grid.get(position);
     }
 
+    public void setNewPos(Position new_pos, Decor d){
+        grid.put(new_pos, d);
+    }
+
     public void deleteDecor(Position p) {
         grid.remove(p);
     }
