@@ -1,12 +1,7 @@
-/*
- * Copyright (c) 2020. Laurent Réveillère
- */
-
 package fr.ubx.poo.engine;
 
 import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
-import fr.ubx.poo.game.PositionNotFoundException;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.view.sprite.Sprite;
 import fr.ubx.poo.view.sprite.SpriteFactory;
@@ -26,7 +21,6 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 public final class GameEngine {
 
@@ -71,15 +65,11 @@ public final class GameEngine {
         root.getChildren().add(layer);
         statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
         // Create decor sprites
-        game.getWorld().forEach( (pos,d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
-        try {
-            List<Position> pos_of_monster = game.getWorld().findMonster();
-            for(Position pos : pos_of_monster){
-                monsters.add(new Monster(game, pos));
-                sprites.add(SpriteFactory.createMonster(layer,monsters.get(monsters.size() - 1)));
-            }
-        } catch (PositionNotFoundException e) {
-            e.printStackTrace();
+        game.getWorld().forEach((pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
+        List<Position> pos_of_monster = game.getWorld().findMonster();
+        for (Position pos : pos_of_monster) {
+            monsters.add(new Monster(game, pos));
+            sprites.add(SpriteFactory.createMonster(layer, monsters.get(monsters.size() - 1)));
         }
         spritePlayer = SpriteFactory.createPlayer(layer, player);
 
@@ -106,6 +96,9 @@ public final class GameEngine {
             gameLoop.stop();
             Platform.exit();
             System.exit(0);
+        }
+        if (input.isKey()) {
+            player.requestOpen();
         }
         if (input.isMoveDown()) {
             player.requestMove(Direction.S);
@@ -144,12 +137,11 @@ public final class GameEngine {
 
     private void update(long now) {
         player.update(now);
-        if(game.getWorld().hasChanged())
-        {
-            game.getWorld().setChange(false);
+        if (game.getWorld().hasChanged()) {
             clear();
+            game.getWorld().setChange(false);
         }
-        if (player.isAlive() == false) {
+        if (!player.isAlive()) {
             gameLoop.stop();
             showMessage("Perdu!", Color.RED);
         }
@@ -159,27 +151,21 @@ public final class GameEngine {
         }
     }
 
-    private void clear(){
+    private void clear() {
         sprites.forEach(Sprite::remove);
         sprites.clear();
-        game.getWorld().forEach( (pos,d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
-        try {
-            List<Position> pos_of_monster = game.getWorld().findMonster();
-            int monster = 0;
-            for(Position pos : pos_of_monster){
-                sprites.add(SpriteFactory.createMonster(layer, monsters.get(monster)));
-                monster++;
-            }
-        } catch (PositionNotFoundException e) {
-            e.printStackTrace();
+        game.getWorld().forEach((pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
+        List<Position> pos_of_monster = game.getWorld().findMonster();
+        int monster = 0;
+        for (Position pos : pos_of_monster) {
+            sprites.add(SpriteFactory.createMonster(layer, monsters.get(monster)));
+            monster++;
         }
     }
 
     private void render() {
         sprites.forEach(Sprite::render);
-        // last rendering to have player in the foreground
         spritePlayer.render();
-
     }
 
     public void start() {

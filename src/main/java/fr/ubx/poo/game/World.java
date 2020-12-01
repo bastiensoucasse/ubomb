@@ -5,6 +5,8 @@
 package fr.ubx.poo.game;
 
 import fr.ubx.poo.model.decor.Decor;
+import fr.ubx.poo.model.decor.DoorNextClosed;
+import fr.ubx.poo.model.decor.DoorNextOpened;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,7 +37,18 @@ public class World {
         throw new PositionNotFoundException("Player");
     }
 
-    public List<Position> findMonster() throws PositionNotFoundException {
+    public Position findDoorPrevOpened() throws PositionNotFoundException {
+        for (int x = 0; x < dimension.width; x++) {
+            for (int y = 0; y < dimension.height; y++) {
+                if (raw[y][x] == WorldEntity.DoorPrevOpened) {
+                    return new Position(x, y);
+                }
+            }
+        }
+        throw new PositionNotFoundException("DoorPrevOpened");
+    }
+
+    public List<Position> findMonster() {
         List<Position> position_of_monsters = new ArrayList<Position>();
         for (int x = 0; x < dimension.width; x++) {
             for (int y = 0; y < dimension.height; y++) {
@@ -53,10 +66,6 @@ public class World {
 
     public Decor get(Position position) {
         return grid.get(position);
-    }
-
-    public void setNewPos(Position new_pos, Decor d){
-        grid.put(new_pos, d);
     }
 
     public void deleteDecor(Position p) {
@@ -93,5 +102,12 @@ public class World {
 
     public void setChange(boolean b) {
         hasChanged = b;
+    }
+
+    public void openDoor(Position p) {
+        if (!(get(p) instanceof DoorNextClosed)) return;
+        deleteDecor(p);
+        set(p, new DoorNextOpened());
+        setChange(true);
     }
 }
