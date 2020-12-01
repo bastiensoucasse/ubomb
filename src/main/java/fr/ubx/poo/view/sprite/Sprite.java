@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2020. Laurent Réveillère
- */
-
 package fr.ubx.poo.view.sprite;
 
 import fr.ubx.poo.game.Position;
@@ -10,7 +6,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
 public abstract class Sprite {
-
     public static final int size = 40;
     private final Pane layer;
     private ImageView imageView;

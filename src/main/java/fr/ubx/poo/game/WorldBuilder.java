@@ -17,35 +17,28 @@ public class WorldBuilder {
             for (int y = 0; y < dimension.height; y++) {
                 Position pos = new Position(x, y);
                 Decor decor = processEntity(raw[y][x]);
-                if (decor != null)
-                    builder.grid.put(pos, decor);
+                if (decor != null) builder.grid.put(pos, decor);
             }
         }
         return builder.grid;
     }
 
     private static Decor processEntity(WorldEntity entity) {
-        switch (entity) {
-            case Stone:
-                return new Stone();
-            case Tree:
-                return new Tree();
-            case Box:
-                return new Box();
-            case BombRangeInc:
-                return new BonusBombRangeInc();
-            case BombRangeDec:
-                return new BonusBombRangeDec();
-            case BombNumberInc:
-                return new BonusBombNbInc();
-            case BombNumberDec:
-                return new BonusBombNbDec();
-            case Princess:
-                return new Princess();
-            case Key:
-                return new Key();
-            default:
-                return null;
-        }
+        return switch (entity) {
+            case BombNumberDec -> new BonusBombNbDec();
+            case BombNumberInc -> new BonusBombNbInc();
+            case BombRangeDec -> new BonusBombRangeDec();
+            case BombRangeInc -> new BonusBombRangeInc();
+            case Box -> new Box();
+            case DoorNextClosed -> new DoorNextClosed();
+            case DoorNextOpened -> new DoorNextOpened();
+            case DoorPrevOpened -> new DoorPrevOpened();
+            case Heart -> new Heart();
+            case Key -> new Key();
+            case Princess -> new Princess();
+            case Stone -> new Stone();
+            case Tree -> new Tree();
+            default -> null;
+        };
     }
 }

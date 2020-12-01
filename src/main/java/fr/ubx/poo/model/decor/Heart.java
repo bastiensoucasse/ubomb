@@ -1,8 +1,8 @@
 package fr.ubx.poo.model.decor;
 
-public class Princess extends Decor {
+public class Heart extends Decor {
     @Override
     public String toString() {
-        return "Princess";
+        return "Heart";
     }
 }
