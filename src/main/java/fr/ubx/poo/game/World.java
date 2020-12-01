@@ -48,6 +48,8 @@ public class World {
     }
 
     public boolean isThereAMonster(Position pos) {
+        if(!pos.inside(dimension))
+            return false;
         return raw[pos.y][pos.x] == WorldEntity.Monster;
     }
 
