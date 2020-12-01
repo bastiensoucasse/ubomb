@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2020. Laurent Réveillère
- */
-
 package fr.ubx.poo.game;
 
 import fr.ubx.poo.model.decor.Decor;
@@ -15,21 +11,30 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 public class World {
-    private final Map<Position, Decor> grid;
-    private final WorldEntity[][] raw;
-    public final Dimension dimension;
-    private boolean hasChanged = true;
+    private final List<WorldEntity[][]> raw;
+    private final List<Dimension> dimension = new ArrayList<>();
+    private final List<Map<Position, Decor>> grid = new ArrayList<>();
+    private int level = 0;
+    private boolean changed = true;
+    private int levelChange = 0;
 
-    public World(WorldEntity[][] raw) {
+    public World(List<WorldEntity[][]> raw) {
         this.raw = raw;
-        dimension = new Dimension(raw.length, raw[0].length);
-        grid = WorldBuilder.build(raw, dimension);
+
+        for (int level = 0; level < raw.size(); level++) {
+            dimension.add(new Dimension(raw.get(level).length, raw.get(level)[0].length));
+            grid.add(WorldBuilder.build(raw.get(level), dimension.get(level)));
+        }
+    }
+
+    public Dimension getDimension() {
+        return dimension.get(level);
     }
 
     public Position findPlayer() throws PositionNotFoundException {
-        for (int x = 0; x < dimension.width; x++) {
-            for (int y = 0; y < dimension.height; y++) {
-                if (raw[y][x] == WorldEntity.Player) {
+        for (int x = 0; x < dimension.get(level).width; x++) {
+            for (int y = 0; y < dimension.get(level).height; y++) {
+                if (raw.get(level)[y][x] == WorldEntity.Player) {
                     return new Position(x, y);
                 }
             }
@@ -38,9 +43,20 @@ public class World {
     }
 
     public Position findDoorPrevOpened() throws PositionNotFoundException {
-        for (int x = 0; x < dimension.width; x++) {
-            for (int y = 0; y < dimension.height; y++) {
-                if (raw[y][x] == WorldEntity.DoorPrevOpened) {
+        for (int x = 0; x < dimension.get(level).width; x++) {
+            for (int y = 0; y < dimension.get(level).height; y++) {
+                if (raw.get(level)[y][x] == WorldEntity.DoorPrevOpened) {
+                    return new Position(x, y);
+                }
+            }
+        }
+        throw new PositionNotFoundException("DoorPrevOpened");
+    }
+
+    public Position findDoorNextOpened() throws PositionNotFoundException {
+        for (int x = 0; x < dimension.get(level).width; x++) {
+            for (int y = 0; y < dimension.get(level).height; y++) {
+                if (raw.get(level)[y][x] == WorldEntity.DoorNextOpened) {
                     return new Position(x, y);
                 }
             }
@@ -50,9 +66,9 @@ public class World {
 
     public List<Position> findMonster() {
         List<Position> position_of_monsters = new ArrayList<Position>();
-        for (int x = 0; x < dimension.width; x++) {
-            for (int y = 0; y < dimension.height; y++) {
-                if (raw[y][x] == WorldEntity.Monster) {
+        for (int x = 0; x < dimension.get(level).width; x++) {
+            for (int y = 0; y < dimension.get(level).height; y++) {
+                if (raw.get(level)[y][x] == WorldEntity.Monster) {
                     position_of_monsters.add(new Position(x, y));
                 }
             }
@@ -61,33 +77,33 @@ public class World {
     }
 
     public boolean isThereAMonster(Position pos) {
-        if(!pos.inside(dimension))
+        if(!pos.inside(dimension.get(level)))
             return false;
-        return raw[pos.y][pos.x] == WorldEntity.Monster;
+        return raw.get(level)[pos.y][pos.x] == WorldEntity.Monster;
     }
 
     public Decor get(Position position) {
-        return grid.get(position);
+        return grid.get(level).get(position);
     }
 
     public void deleteDecor(Position p) {
-        grid.remove(p);
+        grid.get(level).remove(p);
     }
 
     public void set(Position position, Decor decor) {
-        grid.put(position, decor);
+        grid.get(level).put(position, decor);
     }
 
     public void clear(Position position) {
-        grid.remove(position);
+        grid.get(level).remove(position);
     }
 
     public void forEach(BiConsumer<Position, Decor> fn) {
-        grid.forEach(fn);
+        grid.get(level).forEach(fn);
     }
 
     public Collection<Decor> values() {
-        return grid.values();
+        return grid.get(level).values();
     }
 
     public boolean isInside(Position position) {
@@ -95,21 +111,43 @@ public class World {
     }
 
     public boolean isEmpty(Position position) {
-        return grid.get(position) == null;
+        return grid.get(level).get(position) == null;
     }
 
-    public boolean hasChanged() {
-        return hasChanged;
+    public boolean isChanged() {
+        return changed;
     }
 
-    public void setChange(boolean b) {
-        hasChanged = b;
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
+
+    public void setLevelChange(int levelChange) {
+        this.levelChange = levelChange;
     }
 
     public void openDoor(Position p) {
         if (!(get(p) instanceof DoorNextClosed)) return;
         deleteDecor(p);
         set(p, new DoorNextOpened());
-        setChange(true);
+        setChanged(true);
+    }
+
+    public void levelUp() {
+        level++;
+        setLevelChange(1);
+    }
+
+    public void levelDown() {
+        level--;
+        setLevelChange(-1);
+    }
+
+    public int getLevelChange() {
+        return levelChange;
+    }
+
+    public int getLevel() {
+        return level;
     }
 }

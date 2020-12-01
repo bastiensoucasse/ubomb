@@ -45,22 +45,22 @@ public class Player extends GameObject implements Movable {
     public boolean canMove(Direction direction) {
         Position nextPos = direction.nextPosition(getPosition());
 
-        if (!nextPos.inside(game.getWorld().dimension))
+        if (!nextPos.inside(game.getWorld().getDimension()))
             return false;
 
         Decor d = game.getWorld().get(nextPos);
         if (d instanceof Box) {
             Position new_pos = direction.nextPosition(nextPos);
             //Si la new pos est vide et qu'il n'y a pas de monstre et qu'elle est bien dans la dimension du jeu
-            if(game.getWorld().get(new_pos) == null && !game.getWorld().isThereAMonster(new_pos) && direction.nextPosition(nextPos).inside(game.getWorld().dimension)){
+            if(game.getWorld().get(new_pos) == null && !game.getWorld().isThereAMonster(new_pos) && direction.nextPosition(nextPos).inside(game.getWorld().getDimension())){
                 return true;
             }
             //Cas pour les doubles caisses.
             if(game.getWorld().get(new_pos) instanceof Box && game.getWorld().get(direction.nextPosition(new_pos)) == null
-                    && direction.nextPosition(new_pos).inside(game.getWorld().dimension) && !game.getWorld().isThereAMonster(direction.nextPosition(new_pos))){
-                game.getWorld().setNewPos(direction.nextPosition(new_pos), game.getWorld().get(new_pos));
+                    && direction.nextPosition(new_pos).inside(game.getWorld().getDimension()) && !game.getWorld().isThereAMonster(direction.nextPosition(new_pos))){
+                game.getWorld().set(direction.nextPosition(new_pos), game.getWorld().get(new_pos));
                 game.getWorld().deleteDecor(new_pos);
-                game.getWorld().setChange(true);
+                game.getWorld().setChanged(true);
             }
         }
         return d == null || d instanceof Bonus || d instanceof Key || d instanceof Princess || d instanceof Heart || d instanceof DoorPrevOpened || d instanceof DoorNextOpened;
@@ -71,7 +71,7 @@ public class Player extends GameObject implements Movable {
         if (game.getWorld().get(nextPos) instanceof Box) {
             game.getWorld().set(direction.nextPosition(nextPos), game.getWorld().get(nextPos));
             game.getWorld().deleteDecor(nextPos);
-            game.getWorld().setChange(true);
+            game.getWorld().setChanged(true);
         }
         setPosition(nextPos);
     }
@@ -92,14 +92,14 @@ public class Player extends GameObject implements Movable {
                 if (getBombs() > 0) {
                     game.getWorld().deleteDecor(getPosition());
                     bombs.remove(bombs.size() - 1);
-                    game.getWorld().setChange(true);
+                    game.getWorld().setChanged(true);
                 }
             }
 
             if (game.getWorld().get(getPosition()) instanceof BonusBombNbInc) {
                 game.getWorld().deleteDecor(getPosition());
                 bombs.add(new Bomb(this.game, getPosition()));
-                game.getWorld().setChange(true);
+                game.getWorld().setChanged(true);
             }
 
             if (game.getWorld().get(getPosition()) instanceof BonusBombRangeDec) {
@@ -112,14 +112,14 @@ public class Player extends GameObject implements Movable {
                 }
                 if (has_decreased) {
                     game.getWorld().deleteDecor(getPosition());
-                    game.getWorld().setChange(true);
+                    game.getWorld().setChanged(true);
                 }
             }
 
             if (game.getWorld().get(getPosition()) instanceof BonusBombRangeInc) {
                 if (!bombs.isEmpty()) {
                     game.getWorld().deleteDecor(getPosition());
-                    game.getWorld().setChange(true);
+                    game.getWorld().setChanged(true);
                 }
                 for (Bomb b : bombs) {
                     b.incRange();
@@ -127,28 +127,28 @@ public class Player extends GameObject implements Movable {
             }
 
             if (game.getWorld().get(getPosition()) instanceof DoorNextOpened) {
-                // TODO
+                game.getWorld().levelUp();
             }
 
             if (game.getWorld().get(getPosition()) instanceof DoorPrevOpened) {
-                // TODO
+                game.getWorld().levelDown();
             }
 
             if (game.getWorld().get(getPosition()) instanceof Heart) {
                 game.getWorld().deleteDecor(getPosition());
-                game.getWorld().setChange(true);
+                game.getWorld().setChanged(true);
                 lives++;
             }
 
             if (game.getWorld().get(getPosition()) instanceof Key) {
                 game.getWorld().deleteDecor(getPosition());
-                game.getWorld().setChange(true);
+                game.getWorld().setChanged(true);
                 this.keys++;
             }
 
             if (game.getWorld().get(getPosition()) instanceof Princess) {
                 game.getWorld().deleteDecor(getPosition());
-                game.getWorld().setChange(true);
+                game.getWorld().setChanged(true);
                 winner = true;
             }
 
