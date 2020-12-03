@@ -1,6 +1,9 @@
 package fr.ubx.poo.game;
 
 import fr.ubx.poo.model.decor.*;
+import fr.ubx.poo.model.decor.door.Door;
+import fr.ubx.poo.model.decor.door.DoorDestination;
+import fr.ubx.poo.model.decor.door.DoorState;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -30,9 +33,9 @@ public class WorldBuilder {
             case BombRangeDec -> new BonusBombRangeDec();
             case BombRangeInc -> new BonusBombRangeInc();
             case Box -> new Box();
-            case DoorNextClosed -> new DoorNextClosed();
-            case DoorNextOpened -> new DoorNextOpened();
-            case DoorPrevOpened -> new DoorPrevOpened();
+            case DoorNextClosed -> new Door(DoorDestination.NEXT, DoorState.CLOSED);
+            case DoorNextOpened -> new Door(DoorDestination.NEXT, DoorState.OPENED);
+            case DoorPreviousOpened -> new Door(DoorDestination.PREVIOUS, DoorState.OPENED);
             case Heart -> new Heart();
             case Key -> new Key();
             case Princess -> new Princess();

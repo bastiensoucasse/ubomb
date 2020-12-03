@@ -1,8 +1,6 @@
 package fr.ubx.poo.game;
 
 import fr.ubx.poo.model.decor.Decor;
-import fr.ubx.poo.model.decor.DoorNextClosed;
-import fr.ubx.poo.model.decor.DoorNextOpened;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,12 +43,12 @@ public class World {
     public Position findDoorPrevOpened() throws PositionNotFoundException {
         for (int x = 0; x < dimension.get(level).width; x++) {
             for (int y = 0; y < dimension.get(level).height; y++) {
-                if (raw.get(level)[y][x] == WorldEntity.DoorPrevOpened) {
+                if (raw.get(level)[y][x] == WorldEntity.DoorPreviousOpened) {
                     return new Position(x, y);
                 }
             }
         }
-        throw new PositionNotFoundException("DoorPrevOpened");
+        throw new PositionNotFoundException("Door");
     }
 
     public Position findDoorNextOpened() throws PositionNotFoundException {
@@ -61,7 +59,7 @@ public class World {
                 }
             }
         }
-        throw new PositionNotFoundException("DoorPrevOpened");
+        throw new PositionNotFoundException("Door");
     }
 
     public List<Position> findMonster() {
@@ -124,13 +122,6 @@ public class World {
 
     public void setLevelChange(int levelChange) {
         this.levelChange = levelChange;
-    }
-
-    public void openDoor(Position p) {
-        if (!(get(p) instanceof DoorNextClosed)) return;
-        deleteDecor(p);
-        set(p, new DoorNextOpened());
-        setChanged(true);
     }
 
     public void levelUp() {

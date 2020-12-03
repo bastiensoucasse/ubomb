@@ -4,6 +4,7 @@ import static fr.ubx.poo.view.image.ImageResource.*;
 
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.decor.*;
+import fr.ubx.poo.model.decor.door.*;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.model.go.character.Player;
 import fr.ubx.poo.view.image.ImageFactory;
@@ -23,9 +24,9 @@ public final class SpriteFactory {
             return new SpriteDecor(layer, factory.get(BONUS_BOMB_RANGE_INC), position);
         if (decor instanceof Box)
             return new SpriteDecor(layer, factory.get(BOX), position);
-        if (decor instanceof DoorNextClosed)
+        if (decor instanceof Door && ((Door) decor).getState() == DoorState.CLOSED)
             return new SpriteDecor(layer, factory.get(DOOR_CLOSED), position);
-        if (decor instanceof DoorNextOpened || decor instanceof DoorPrevOpened)
+        if (decor instanceof Door && ((Door) decor).getState() == DoorState.OPENED)
             return new SpriteDecor(layer, factory.get(DOOR_OPENED), position);
         if (decor instanceof Heart)
             return new SpriteDecor(layer, factory.get(HEART), position);
