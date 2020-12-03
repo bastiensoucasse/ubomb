@@ -3,6 +3,8 @@ package fr.ubx.poo.engine;
 import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.game.PositionNotFoundException;
+import fr.ubx.poo.model.decor.Bonus.Bonus;
+import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.view.sprite.Sprite;
 import fr.ubx.poo.view.sprite.SpriteFactory;
@@ -31,6 +33,8 @@ public final class GameEngine {
     private final Player player;
     private final List<Sprite> sprites = new ArrayList<>();
     private final List<Monster> monsters = new ArrayList<>();
+    private final List<Bomb> bombs = new ArrayList<>();
+    private final List<Bonus> bonuses = new ArrayList<>();
     private StatusBar statusBar;
     private Pane layer;
     private Input input;
@@ -74,6 +78,12 @@ public final class GameEngine {
         }
         if (input.isKey()) {
             player.requestOpen();
+        }
+        if(input.isBomb()){
+            Bomb b = player.dropABomb();
+            if(b != null)
+                bombs.add(b);
+
         }
         if (input.isMoveDown()) {
             player.requestMove(Direction.S);
@@ -127,16 +137,15 @@ public final class GameEngine {
         int sceneHeight = height * Sprite.size;
         Scene scene = new Scene(root, sceneWidth, sceneHeight + StatusBar.height);
         scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
-
         stage.setTitle(windowTitle);
         stage.setScene(scene);
         stage.show();
-
         input = new Input(scene);
         root.getChildren().add(layer);
         statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
 
         game.getWorld().forEach((pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
+
         List<Position> pos_of_monster = game.getWorld().findMonster();
         for (Position pos : pos_of_monster) {
             monsters.add(new Monster(game, pos));
@@ -184,6 +193,8 @@ public final class GameEngine {
     private void clear() {
         sprites.forEach(Sprite::remove);
         sprites.clear();
+
+        game.getWorld().updateWorld();
         game.getWorld().forEach((pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
         List<Position> pos_of_monster = game.getWorld().findMonster();
         int monster = 0;
@@ -191,6 +202,10 @@ public final class GameEngine {
             sprites.add(SpriteFactory.createMonster(layer, monsters.get(monster)));
             monster++;
         }
+        for(int i =0; i<bombs.size(); i++){
+            sprites.add(SpriteFactory.createBomb(layer, bombs.get(i)));
+        }
+
     }
 
     private void render() {

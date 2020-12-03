@@ -1,11 +1,10 @@
 package fr.ubx.poo.game;
 
+import fr.ubx.poo.model.decor.Bonus.Bonus;
 import fr.ubx.poo.model.decor.Decor;
+import javafx.geometry.Pos;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 public class World {
@@ -140,5 +139,16 @@ public class World {
 
     public int getLevel() {
         return level;
+    }
+
+    public void updateWorld() {
+        Iterator<Map.Entry<Position,Decor>> itr = grid.get(level).entrySet().iterator();
+        while (itr.hasNext()) {
+            Map.Entry<Position,Decor> entry = itr.next();
+            if(entry.getValue() instanceof Bonus)
+                if(!((Bonus) entry.getValue()).getVisibility()){
+                    itr.remove();
+                }
+        }
     }
 }

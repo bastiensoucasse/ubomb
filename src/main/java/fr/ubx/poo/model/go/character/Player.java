@@ -4,6 +4,7 @@ import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.Movable;
 import fr.ubx.poo.model.decor.*;
+import fr.ubx.poo.model.decor.Bonus.*;
 import fr.ubx.poo.model.decor.door.*;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.GameObject;
@@ -26,6 +27,7 @@ public class Player extends GameObject implements Movable {
         super(game, position);
         this.direction = Direction.S;
         this.lives = game.getLives();
+        bombs.add(new Bomb(game, getPosition()));
     }
 
     public int getLives() {
@@ -41,42 +43,10 @@ public class Player extends GameObject implements Movable {
         if (moveRequested && canMove(direction)) {
             doMove(direction);
 
-            if (game.getWorld().get(getPosition()) instanceof BonusBombNbDec) {
-                if (getBombs() > 0) {
-                    game.getWorld().deleteDecor(getPosition());
-                    bombs.remove(bombs.size() - 1);
-                    game.getWorld().setChanged(true);
-                }
-            }
-
-            if (game.getWorld().get(getPosition()) instanceof BonusBombNbInc) {
-                game.getWorld().deleteDecor(getPosition());
-                bombs.add(new Bomb(this.game, getPosition()));
+            if (game.getWorld().get(getPosition()) instanceof Bonus) {
+                Bonus b = (Bonus) game.getWorld().get(getPosition());
+                b.pick(game.getPlayer());
                 game.getWorld().setChanged(true);
-            }
-
-            if (game.getWorld().get(getPosition()) instanceof BonusBombRangeDec) {
-                boolean has_decreased = false;
-                for (Bomb b : bombs) {
-                    if (b.getRange() >= 2) {
-                        b.decRange();
-                        has_decreased = true;
-                    }
-                }
-                if (has_decreased) {
-                    game.getWorld().deleteDecor(getPosition());
-                    game.getWorld().setChanged(true);
-                }
-            }
-
-            if (game.getWorld().get(getPosition()) instanceof BonusBombRangeInc) {
-                if (!bombs.isEmpty()) {
-                    game.getWorld().deleteDecor(getPosition());
-                    game.getWorld().setChanged(true);
-                }
-                for (Bomb b : bombs) {
-                    b.incRange();
-                }
             }
 
             if (game.getWorld().get(getPosition()) instanceof Door)
@@ -204,5 +174,41 @@ public class Player extends GameObject implements Movable {
 
     public boolean isWinner() {
         return winner;
+    }
+
+    public Bomb dropABomb() {
+        Bomb b = null;
+        if(bombs.size() > 0){
+            b = bombs.get(getBombs()-1);
+            b.setPosition(getPosition());
+            game.getWorld().setChanged(true);
+            bombs.remove(b);
+        }
+        return b;
+    }
+
+    public void decBombs() {
+        bombs.remove(getBombs()-1);
+    }
+
+    public void addBomb(){
+        bombs.add(new Bomb(game, getPosition()));
+    }
+
+    public boolean decRange() {
+        boolean has_decreased=false;
+        for(Bomb b : bombs){
+            if(b.getRange()>1) {
+                b.decRange();
+                has_decreased = true;
+            }
+        }
+        return has_decreased;
+    }
+
+    public void incRange() {
+        for(Bomb b : bombs){
+            b.incRange();
+        }
     }
 }

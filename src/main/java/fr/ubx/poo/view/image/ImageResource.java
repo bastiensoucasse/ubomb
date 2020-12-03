@@ -32,7 +32,11 @@ public enum ImageResource {
     PLAYER_UP("player_up.png"),
     PRINCESS("bomberwoman.png"),
     STONE("stone.png"),
-    TREE("tree.png");
+    TREE("tree.png"),
+    BOMB1("bomb1.png"),
+    BOMB2("bomb2.png"),
+    BOMB3("bomb3.png"),
+    BOMB4("bomb4.png");
 
     private final String FileName;
 

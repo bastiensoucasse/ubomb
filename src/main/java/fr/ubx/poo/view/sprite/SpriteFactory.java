@@ -5,6 +5,11 @@ import static fr.ubx.poo.view.image.ImageResource.*;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.decor.*;
 import fr.ubx.poo.model.decor.door.*;
+import fr.ubx.poo.model.decor.Bonus.BonusBombNbDec;
+import fr.ubx.poo.model.decor.Bonus.BonusBombNbInc;
+import fr.ubx.poo.model.decor.Bonus.BonusBombRangeDec;
+import fr.ubx.poo.model.decor.Bonus.BonusBombRangeInc;
+import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.model.go.character.Player;
 import fr.ubx.poo.view.image.ImageFactory;
@@ -47,5 +52,9 @@ public final class SpriteFactory {
 
     public static Sprite createPlayer(Pane layer, Player player) {
         return new SpritePlayer(layer, player);
+    }
+
+    public static Sprite createBomb(Pane layer, Bomb bomb) {
+        return new SpriteBomb(layer, bomb);
     }
 }
