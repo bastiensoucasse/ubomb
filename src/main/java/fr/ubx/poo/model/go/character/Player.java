@@ -4,7 +4,6 @@ import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.Movable;
 import fr.ubx.poo.model.decor.*;
-import fr.ubx.poo.model.decor.Bonus.*;
 import fr.ubx.poo.model.decor.door.*;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.GameObject;
@@ -43,32 +42,8 @@ public class Player extends GameObject implements Movable {
         if (moveRequested && canMove(direction)) {
             doMove(direction);
 
-            if (game.getWorld().get(getPosition()) instanceof Bonus) {
-                Bonus b = (Bonus) game.getWorld().get(getPosition());
-                b.pick(game.getPlayer());
-                game.getWorld().setChanged(true);
-            }
-
             if (game.getWorld().get(getPosition()) instanceof Door)
                 travel((Door) game.getWorld().get(getPosition()));
-
-            if (game.getWorld().get(getPosition()) instanceof Heart) {
-                game.getWorld().deleteDecor(getPosition());
-                game.getWorld().setChanged(true);
-                lives++;
-            }
-
-            if (game.getWorld().get(getPosition()) instanceof Key) {
-                game.getWorld().deleteDecor(getPosition());
-                game.getWorld().setChanged(true);
-                this.keys++;
-            }
-
-            if (game.getWorld().get(getPosition()) instanceof Princess) {
-                game.getWorld().deleteDecor(getPosition());
-                game.getWorld().setChanged(true);
-                winner = true;
-            }
 
             if (game.getWorld().isThereAMonster(getPosition()))
                 lives--;
@@ -83,6 +58,14 @@ public class Player extends GameObject implements Movable {
         if (openRequested && canOpen()) {
             doOpen();
             openRequested = false;
+        }
+
+        //For all collectibles : bonus, keys, princess, heart...
+        if(game.getWorld().get(getPosition()) != null && game.getWorld().get(getPosition()).canBePicked()){
+            Collectible i = (Collectible) game.getWorld().get(getPosition());
+            i.specializedAction(game.getPlayer());
+            game.getWorld().deleteDecor(getPosition());
+            game.getWorld().setChanged(true);
         }
     }
 
@@ -112,7 +95,7 @@ public class Player extends GameObject implements Movable {
             //Cas pour les doubles caisses.
             if (game.getWorld().get(new_pos) instanceof Box && game.getWorld().get(direction.nextPosition(new_pos)) == null
                     && direction.nextPosition(new_pos).inside(game.getWorld().getDimension()) && !game.getWorld().isThereAMonster(direction.nextPosition(new_pos))) {
-                game.getWorld().set(direction.nextPosition(new_pos), game.getWorld().get(new_pos));
+                game.getWorld().setDecor(direction.nextPosition(new_pos), game.getWorld().get(new_pos));
                 game.getWorld().deleteDecor(new_pos);
                 game.getWorld().setChanged(true);
             }
@@ -124,7 +107,7 @@ public class Player extends GameObject implements Movable {
     public void doMove(Direction direction) {
         Position nextPos = direction.nextPosition(getPosition());
         if (game.getWorld().get(nextPos) instanceof Box) {
-            game.getWorld().set(direction.nextPosition(nextPos), game.getWorld().get(nextPos));
+            game.getWorld().setDecor(direction.nextPosition(nextPos), game.getWorld().get(nextPos));
             game.getWorld().deleteDecor(nextPos);
             game.getWorld().setChanged(true);
         }
@@ -210,5 +193,17 @@ public class Player extends GameObject implements Movable {
         for(Bomb b : bombs){
             b.incRange();
         }
+    }
+
+    public void incLife() {
+        lives++;
+    }
+
+    public void incKey() {
+        keys++;
+    }
+
+    public void hasWon() {
+        winner=true;
     }
 }

@@ -28,4 +28,9 @@ public class Door extends Decor {
     public String toString() {
         return "Door";
     }
+
+    @Override
+    public Boolean canBePicked() {
+        return false;
+    }
 }

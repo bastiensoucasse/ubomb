@@ -69,8 +69,8 @@ public final class ImageFactory {
         return get(direction_for_monsters[dir.ordinal()]);
     }
 
-    public Image getBomb() {
-        return get(bombs[0]);
+    public Image getBomb(int sprite_nb) {
+        return get(bombs[sprite_nb]);
     }
 
     /**

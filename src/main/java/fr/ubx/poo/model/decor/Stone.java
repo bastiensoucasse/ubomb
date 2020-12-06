@@ -5,4 +5,9 @@ public class Stone extends Decor {
     public String toString() {
         return "Stone";
     }
+
+    @Override
+    public Boolean canBePicked() {
+        return false;
+    }
 }

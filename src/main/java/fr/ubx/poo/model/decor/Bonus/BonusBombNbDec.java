@@ -8,11 +8,15 @@ public class BonusBombNbDec extends Bonus {
     }
 
     @Override
-    public void pick(Player p) {
-        if(p.getBombs()>1){
-            p.decBombs();
+    public void specializedAction(Player player) {
+        if(player.getBombs()>1){
+            player.decBombs();
             setVisibility(false);
         }
+    }
+
+    @Override
+    public void pick(Player p) {
     }
 
     @Override

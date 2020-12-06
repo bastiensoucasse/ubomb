@@ -7,6 +7,7 @@ import fr.ubx.poo.model.decor.Bonus.Bonus;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.view.sprite.Sprite;
+import fr.ubx.poo.view.sprite.SpriteBomb;
 import fr.ubx.poo.view.sprite.SpriteFactory;
 import fr.ubx.poo.game.Game;
 import fr.ubx.poo.model.go.character.Player;
@@ -22,8 +23,11 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public final class GameEngine {
 
@@ -34,7 +38,6 @@ public final class GameEngine {
     private final List<Sprite> sprites = new ArrayList<>();
     private final List<Monster> monsters = new ArrayList<>();
     private final List<Bomb> bombs = new ArrayList<>();
-    private final List<Bonus> bonuses = new ArrayList<>();
     private StatusBar statusBar;
     private Pane layer;
     private Input input;
@@ -169,7 +172,7 @@ public final class GameEngine {
     private void update(long now) {
         player.update(now);
         if (game.getWorld().isChanged()) {
-            clear();
+            redrawTheSprites();
             game.getWorld().setChanged(false);
         }
         if (game.getWorld().getLevelChange() == 1) {
@@ -190,7 +193,7 @@ public final class GameEngine {
         }
     }
 
-    private void clear() {
+    private void redrawTheSprites() {
         sprites.forEach(Sprite::remove);
         sprites.clear();
 
@@ -203,9 +206,25 @@ public final class GameEngine {
             monster++;
         }
         for(int i =0; i<bombs.size(); i++){
+            //createTimer(i);
             sprites.add(SpriteFactory.createBomb(layer, bombs.get(i)));
         }
+    }
 
+    //-------------- WIP -------------------
+    void createTimer(int i){
+        TimerTask timertask = new TimerTask() {
+            @Override
+            public void run() {
+                sprites.add(SpriteFactory.createBomb(layer, bombs.get(i)));
+                SpriteBomb b = (SpriteBomb) sprites.get(sprites.size()-1);
+                b.setSprite_nb(3);
+                b.updateImage();
+            }
+        };
+
+        Timer timer = new Timer("Bomb timer");
+        timer.schedule(timertask, 0, 1000);
     }
 
     private void render() {

@@ -8,9 +8,13 @@ public class BonusBombNbInc extends Bonus {
     }
 
     @Override
-    public void pick(Player p) {
-        p.addBomb();
+    public void specializedAction(Player player) {
+        player.addBomb();
         setVisibility(false);
+    }
+
+    @Override
+    public void pick(Player p) {
     }
 
     @Override

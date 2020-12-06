@@ -87,7 +87,8 @@ public class World {
         grid.get(level).remove(p);
     }
 
-    public void set(Position position, Decor decor) {
+    //Set the decor into the grid
+    public void setDecor(Position position, Decor decor) {
         grid.get(level).put(position, decor);
     }
 

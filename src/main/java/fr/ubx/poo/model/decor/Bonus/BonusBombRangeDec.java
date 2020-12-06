@@ -8,9 +8,13 @@ public class BonusBombRangeDec extends Bonus {
     }
 
     @Override
-    public void pick(Player p) {
-        if(p.decRange())
+    public void specializedAction(Player player) {
+        if(player.decRange())
             setVisibility(false);
+    }
+
+    @Override
+    public void pick(Player p) {
     }
 
     @Override

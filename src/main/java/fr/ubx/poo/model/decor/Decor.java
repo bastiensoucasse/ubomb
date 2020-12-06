@@ -1,6 +1,7 @@
 package fr.ubx.poo.model.decor;
 
 import fr.ubx.poo.model.Entity;
+import fr.ubx.poo.model.go.character.Player;
 
 public abstract class Decor extends Entity {
     private final boolean walkable;
@@ -19,4 +20,6 @@ public abstract class Decor extends Entity {
     public boolean isWalkable() {
         return walkable;
     }
+
+    public abstract Boolean canBePicked();
 }

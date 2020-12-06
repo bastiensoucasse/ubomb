@@ -1,6 +1,8 @@
 package fr.ubx.poo.model.decor;
 
-public class  Princess extends Decor {
+import fr.ubx.poo.model.go.character.Player;
+
+public class  Princess extends Collectible {
     public Princess() {
         super(true);
     }
@@ -8,5 +10,10 @@ public class  Princess extends Decor {
     @Override
     public String toString() {
         return "Princess";
+    }
+
+    @Override
+    public void specializedAction(Player player) {
+        player.hasWon();
     }
 }

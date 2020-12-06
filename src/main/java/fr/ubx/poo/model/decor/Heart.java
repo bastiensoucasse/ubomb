@@ -1,6 +1,8 @@
 package fr.ubx.poo.model.decor;
 
-public class Heart extends Decor {
+import fr.ubx.poo.model.go.character.Player;
+
+public class Heart extends Collectible {
     public Heart() {
         super(true);
     }
@@ -8,5 +10,10 @@ public class Heart extends Decor {
     @Override
     public String toString() {
         return "Heart";
+    }
+
+    @Override
+    public void specializedAction(Player player) {
+        player.incLife();
     }
 }

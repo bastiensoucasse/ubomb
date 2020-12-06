@@ -1,6 +1,8 @@
 package fr.ubx.poo.model.decor;
 
-public class Key extends Decor {
+import fr.ubx.poo.model.go.character.Player;
+
+public class Key extends Collectible {
     public Key() {
         super(true);
     }
@@ -8,5 +10,10 @@ public class Key extends Decor {
     @Override
     public String toString() {
         return "Key";
+    }
+
+    @Override
+    public void specializedAction(Player player) {
+        player.incKey();
     }
 }
