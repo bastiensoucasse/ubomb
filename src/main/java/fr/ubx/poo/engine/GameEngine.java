@@ -3,7 +3,6 @@ package fr.ubx.poo.engine;
 import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.game.PositionNotFoundException;
-import fr.ubx.poo.model.decor.Bonus.Bonus;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.view.sprite.Sprite;
@@ -23,7 +22,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -82,11 +80,10 @@ public final class GameEngine {
         if (input.isKey()) {
             player.requestOpen();
         }
-        if(input.isBomb()){
-            Bomb b = player.dropABomb();
-            if(b != null)
+        if (input.isBomb()) {
+            Bomb b = player.dropBomb();
+            if (b != null)
                 bombs.add(b);
-
         }
         if (input.isMoveDown()) {
             player.requestMove(Direction.S);
@@ -205,19 +202,19 @@ public final class GameEngine {
             sprites.add(SpriteFactory.createMonster(layer, monsters.get(monster)));
             monster++;
         }
-        for(int i =0; i<bombs.size(); i++){
+        for (int i = 0; i < bombs.size(); i++) {
             //createTimer(i);
             sprites.add(SpriteFactory.createBomb(layer, bombs.get(i)));
         }
     }
 
     //-------------- WIP -------------------
-    void createTimer(int i){
+    void createTimer(int i) {
         TimerTask timertask = new TimerTask() {
             @Override
             public void run() {
                 sprites.add(SpriteFactory.createBomb(layer, bombs.get(i)));
-                SpriteBomb b = (SpriteBomb) sprites.get(sprites.size()-1);
+                SpriteBomb b = (SpriteBomb) sprites.get(sprites.size() - 1);
                 b.setSprite_nb(3);
                 b.updateImage();
             }

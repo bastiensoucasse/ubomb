@@ -1,19 +1,15 @@
-package fr.ubx.poo.model.decor;
+package fr.ubx.poo.model.decor.collectible;
 
 import fr.ubx.poo.model.go.character.Player;
 
 public class Heart extends Collectible {
-    public Heart() {
-        super(true);
-    }
-
     @Override
     public String toString() {
         return "Heart";
     }
 
     @Override
-    public void specializedAction(Player player) {
-        player.incLife();
+    public void collect(final Player player) {
+        player.addLife();
     }
 }

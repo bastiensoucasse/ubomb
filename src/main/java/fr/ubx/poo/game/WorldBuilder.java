@@ -1,13 +1,16 @@
 package fr.ubx.poo.game;
 
 import fr.ubx.poo.model.decor.*;
+import fr.ubx.poo.model.decor.collectible.Heart;
+import fr.ubx.poo.model.decor.collectible.Key;
+import fr.ubx.poo.model.decor.collectible.Princess;
 import fr.ubx.poo.model.decor.door.Door;
 import fr.ubx.poo.model.decor.door.DoorDestination;
 import fr.ubx.poo.model.decor.door.DoorState;
-import fr.ubx.poo.model.decor.Bonus.BonusBombNbDec;
-import fr.ubx.poo.model.decor.Bonus.BonusBombNbInc;
-import fr.ubx.poo.model.decor.Bonus.BonusBombRangeDec;
-import fr.ubx.poo.model.decor.Bonus.BonusBombRangeInc;
+import fr.ubx.poo.model.decor.collectible.bonus.BonusBombNbDec;
+import fr.ubx.poo.model.decor.collectible.bonus.BonusBombNbInc;
+import fr.ubx.poo.model.decor.collectible.bonus.BonusBombRangeDec;
+import fr.ubx.poo.model.decor.collectible.bonus.BonusBombRangeInc;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -32,10 +35,10 @@ public class WorldBuilder {
 
     private static Decor processEntity(WorldEntity entity) {
         return switch (entity) {
-            case BombNumberDec -> new BonusBombNbDec(true);
-            case BombNumberInc -> new BonusBombNbInc(true);
-            case BombRangeDec -> new BonusBombRangeDec(true);
-            case BombRangeInc -> new BonusBombRangeInc(true);
+            case BombNumberDec -> new BonusBombNbDec();
+            case BombNumberInc -> new BonusBombNbInc();
+            case BombRangeDec -> new BonusBombRangeDec();
+            case BombRangeInc -> new BonusBombRangeInc();
             case Box -> new Box();
             case DoorNextClosed -> new Door(DoorDestination.NEXT, DoorState.CLOSED);
             case DoorNextOpened -> new Door(DoorDestination.NEXT, DoorState.OPENED);

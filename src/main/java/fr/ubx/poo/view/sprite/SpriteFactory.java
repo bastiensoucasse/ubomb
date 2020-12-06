@@ -4,11 +4,14 @@ import static fr.ubx.poo.view.image.ImageResource.*;
 
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.decor.*;
+import fr.ubx.poo.model.decor.collectible.Heart;
+import fr.ubx.poo.model.decor.collectible.Key;
+import fr.ubx.poo.model.decor.collectible.Princess;
 import fr.ubx.poo.model.decor.door.*;
-import fr.ubx.poo.model.decor.Bonus.BonusBombNbDec;
-import fr.ubx.poo.model.decor.Bonus.BonusBombNbInc;
-import fr.ubx.poo.model.decor.Bonus.BonusBombRangeDec;
-import fr.ubx.poo.model.decor.Bonus.BonusBombRangeInc;
+import fr.ubx.poo.model.decor.collectible.bonus.BonusBombNbDec;
+import fr.ubx.poo.model.decor.collectible.bonus.BonusBombNbInc;
+import fr.ubx.poo.model.decor.collectible.bonus.BonusBombRangeDec;
+import fr.ubx.poo.model.decor.collectible.bonus.BonusBombRangeInc;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.model.go.character.Player;

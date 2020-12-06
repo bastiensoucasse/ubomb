@@ -2,133 +2,92 @@ package fr.ubx.poo.model.go.character;
 
 import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
-import fr.ubx.poo.model.Movable;
-import fr.ubx.poo.model.decor.*;
-import fr.ubx.poo.model.decor.door.*;
+import fr.ubx.poo.model.decor.Box;
+import fr.ubx.poo.model.decor.Decor;
+import fr.ubx.poo.model.decor.collectible.Collectible;
+import fr.ubx.poo.model.decor.door.Door;
+import fr.ubx.poo.model.decor.door.DoorDestination;
+import fr.ubx.poo.model.decor.door.DoorState;
 import fr.ubx.poo.model.go.Bomb;
-import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.game.Game;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class Player extends GameObject implements Movable {
-    private boolean alive = true;
-    Direction direction;
+public class Player extends Character {
     private boolean moveRequested = false;
     private boolean openRequested = false;
-    private int lives = 1;
     private boolean winner;
-    private int keys = 0;
-    private List<Bomb> bombs = new ArrayList<Bomb>();
+    private int keys;
+    private int bombs;
+    private int bombsRange;
 
-    public Player(Game game, Position position) {
-        super(game, position);
-        this.direction = Direction.S;
-        this.lives = game.getLives();
-        bombs.add(new Bomb(game, getPosition()));
+    public Player(final Game game, final Position position) {
+        super(game, position, Direction.S, game.getLives());
+        this.winner = false;
+        this.keys = 0;
+        this.bombs = 1;
+        this.bombsRange = 1;
     }
 
-    public int getLives() {
-        return lives;
+    public boolean isWinner() {
+        return winner;
     }
 
-    public Direction getDirection() {
-        return direction;
+    public void win() {
+        winner = true;
     }
 
-    public void update(long now) {
-        // Move requested handler
-        if (moveRequested && canMove(direction)) {
-            doMove(direction);
-
-            if (game.getWorld().get(getPosition()) instanceof Door)
-                travel((Door) game.getWorld().get(getPosition()));
-
-            if (game.getWorld().isThereAMonster(getPosition()))
-                lives--;
-
-            if (lives == 0)
-                alive = false;
-
-            moveRequested = false;
-        }
-
-        // Open requested handler
-        if (openRequested && canOpen()) {
-            doOpen();
-            openRequested = false;
-        }
-
-        //For all collectibles : bonus, keys, princess, heart...
-        if(game.getWorld().get(getPosition()) != null && game.getWorld().get(getPosition()).canBePicked()){
-            Collectible i = (Collectible) game.getWorld().get(getPosition());
-            i.specializedAction(game.getPlayer());
-            game.getWorld().deleteDecor(getPosition());
-            game.getWorld().setChanged(true);
-        }
+    public int getKeys() {
+        return keys;
     }
 
-    public void requestMove(Direction direction) {
-        if (direction != this.direction)
-            this.direction = direction;
-        moveRequested = true;
+    public void addKey() {
+        keys++;
     }
 
-    @Override
-    public boolean canMove(Direction direction) {
-        Position nextPos = direction.nextPosition(getPosition());
-
-        if (!nextPos.inside(game.getWorld().getDimension()))
-            return false;
-
-        Decor decor = game.getWorld().get(nextPos);
-        if (decor == null)
-            return true;
-
-        if (decor instanceof Box) {
-            Position new_pos = direction.nextPosition(nextPos);
-            //Si la new pos est vide et qu'il n'y a pas de monstre et qu'elle est bien dans la dimension du jeu
-            if (game.getWorld().get(new_pos) == null && !game.getWorld().isThereAMonster(new_pos) && direction.nextPosition(nextPos).inside(game.getWorld().getDimension())) {
-                return true;
-            }
-            //Cas pour les doubles caisses.
-            if (game.getWorld().get(new_pos) instanceof Box && game.getWorld().get(direction.nextPosition(new_pos)) == null
-                    && direction.nextPosition(new_pos).inside(game.getWorld().getDimension()) && !game.getWorld().isThereAMonster(direction.nextPosition(new_pos))) {
-                game.getWorld().setDecor(direction.nextPosition(new_pos), game.getWorld().get(new_pos));
-                game.getWorld().deleteDecor(new_pos);
-                game.getWorld().setChanged(true);
-            }
-        }
-
-        return decor.isWalkable();
+    public void removeKey() {
+        keys--;
     }
 
-    public void doMove(Direction direction) {
-        Position nextPos = direction.nextPosition(getPosition());
-        if (game.getWorld().get(nextPos) instanceof Box) {
-            game.getWorld().setDecor(direction.nextPosition(nextPos), game.getWorld().get(nextPos));
-            game.getWorld().deleteDecor(nextPos);
-            game.getWorld().setChanged(true);
-        }
-        setPosition(nextPos);
+    public int getBombs() {
+        return bombs;
     }
 
-    public void requestOpen() {
-        openRequested = true;
+    public void addBomb() {
+        bombs++;
     }
 
-    private boolean canOpen() {
-        Decor decor = game.getWorld().get(direction.nextPosition(getPosition()));
-        if (!(decor instanceof Door)) return false;
-        return ((Door)decor).getState() == DoorState.CLOSED && keys > 0;
+    public void removeBomb() {
+        bombs--;
     }
 
-    private void doOpen() {
-        ((Door) game.getWorld().get(direction.nextPosition(getPosition()))).setState(DoorState.OPENED);
+    public int getBombsRange() {
+        return bombsRange;
     }
 
-    private void travel(Door door) {
+    public void increaseBombsRange() {
+        bombsRange++;
+    }
+
+    public void decreaseBombsRange() {
+        bombsRange--;
+    }
+
+    public Bomb dropBomb() {
+        if (getBombs() < 1)
+            return null;
+
+        Bomb bomb = new Bomb(game, getPosition());
+        removeBomb();
+        game.getWorld().setChanged(true);
+        return bomb;
+    }
+
+    private void collect(final Collectible collectible) {
+        collectible.collect(this);
+        game.getWorld().deleteDecor(getPosition());
+        game.getWorld().setChanged(true);
+    }
+
+    private void travel(final Door door) {
         if (door.getState() != DoorState.OPENED)
             return;
 
@@ -137,73 +96,97 @@ public class Player extends GameObject implements Movable {
 
         if (door.getDestination() == DoorDestination.PREVIOUS)
             game.getWorld().levelDown();
+
+        game.getWorld().setChanged(true);
     }
 
-    public int getBombs() {
-        return bombs.size();
+    public void requestOpen() {
+        openRequested = true;
     }
 
-    public int getBombsRange() {
-        return bombs.get(getBombs() - 1).getRange();
+    public boolean canOpen() {
+        Decor decor = game.getWorld().get(getDirection().nextPosition(getPosition()));
+        return decor != null && decor.isOpenable(this);
     }
 
-    public int getKeys() {
-        return keys;
+    private void doOpen() {
+        ((Door) game.getWorld().get(getDirection().nextPosition(getPosition()))).open(this);
+        game.getWorld().setChanged(true);
     }
 
-    public boolean isAlive() {
-        return alive;
+    public void requestMove(final Direction direction) {
+        if (getDirection() != direction)
+            setDirection(direction);
+
+        moveRequested = true;
     }
 
-    public boolean isWinner() {
-        return winner;
-    }
+    @Override
+    public boolean canMove(final Direction direction) {
+        Position position = direction.nextPosition(getPosition());
 
-    public Bomb dropABomb() {
-        Bomb b = null;
-        if(bombs.size() > 0){
-            b = bombs.get(getBombs()-1);
-            b.setPosition(getPosition());
-            game.getWorld().setChanged(true);
-            bombs.remove(b);
-        }
-        return b;
-    }
+        if (!position.inside(game.getWorld().getDimension()))
+            return false;
 
-    public void decBombs() {
-        bombs.remove(getBombs()-1);
-    }
+        Decor decor = game.getWorld().get(position);
 
-    public void addBomb(){
-        bombs.add(new Bomb(game, getPosition()));
-    }
+        if (decor == null)
+            return true;
 
-    public boolean decRange() {
-        boolean has_decreased=false;
-        for(Bomb b : bombs){
-            if(b.getRange()>1) {
-                b.decRange();
-                has_decreased = true;
+        if (decor instanceof Box) {
+            Position new_pos = getDirection().nextPosition(position);
+            //Si la new pos est vide et qu'il n'y a pas de monstre et qu'elle est bien dans la dimension du jeu
+            if (game.getWorld().get(new_pos) == null && !game.getWorld().isThereAMonster(new_pos) && getDirection().nextPosition(position).inside(game.getWorld().getDimension())) {
+                return true;
+            }
+            //Cas pour les doubles caisses.
+            if (game.getWorld().get(new_pos) instanceof Box && game.getWorld().get(getDirection().nextPosition(new_pos)) == null
+                    && getDirection().nextPosition(new_pos).inside(game.getWorld().getDimension()) && !game.getWorld().isThereAMonster(getDirection().nextPosition(new_pos))) {
+                game.getWorld().setDecor(getDirection().nextPosition(new_pos), game.getWorld().get(new_pos));
+                game.getWorld().deleteDecor(new_pos);
+                game.getWorld().setChanged(true);
             }
         }
-        return has_decreased;
+
+        return decor.isWalkable();
     }
 
-    public void incRange() {
-        for(Bomb b : bombs){
-            b.incRange();
+    @Override
+    public void doMove(final Direction direction) {
+        Position position = direction.nextPosition(getPosition());
+
+        if (game.getWorld().get(position) instanceof Box) {
+            game.getWorld().setDecor(getDirection().nextPosition(position), game.getWorld().get(position));
+            game.getWorld().deleteDecor(position);
+            game.getWorld().setChanged(true);
         }
+
+        setPosition(position);
+
+        if (game.getWorld().isThereAMonster(getPosition()))
+            removeLife();
     }
 
-    public void incLife() {
-        lives++;
-    }
+    public void update(final long now) {
+        Decor decor = game.getWorld().get(getPosition());
+        if (decor != null) {
+            if (decor.isCollectable())
+                collect((Collectible) decor);
 
-    public void incKey() {
-        keys++;
-    }
+            if (decor.canGetThrough())
+                travel((Door) decor);
+        }
 
-    public void hasWon() {
-        winner=true;
+        if (openRequested) {
+            if (canOpen())
+                doOpen();
+            openRequested = false;
+        }
+
+        if (moveRequested) {
+            if (canMove(getDirection()))
+                doMove(getDirection());
+            moveRequested = false;
+        }
     }
 }

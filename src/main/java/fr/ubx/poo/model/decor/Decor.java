@@ -4,12 +4,16 @@ import fr.ubx.poo.model.Entity;
 import fr.ubx.poo.model.go.character.Player;
 
 public abstract class Decor extends Entity {
-    private final boolean walkable;
+    private final boolean collectable;
+    private boolean walkable;
 
-    public Decor() { this(false); }
-
-    public Decor(boolean walkable) {
+    public Decor(final boolean collectable, final boolean walkable) {
+        this.collectable = collectable;
         this.walkable = walkable;
+    }
+
+    public Decor() {
+        this(false, false);
     }
 
     @Override
@@ -17,9 +21,21 @@ public abstract class Decor extends Entity {
         return "Decor";
     }
 
+    public boolean isCollectable() {
+        return collectable;
+    }
+
     public boolean isWalkable() {
         return walkable;
     }
 
-    public abstract Boolean canBePicked();
+    public void setWalkable(final boolean walkable) {
+        this.walkable = walkable;
+    }
+
+    public boolean canGetThrough() { return false; }
+
+    public boolean isOpenable(final Player player) {
+        return false;
+    }
 }

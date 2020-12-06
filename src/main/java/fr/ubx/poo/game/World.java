@@ -1,8 +1,7 @@
 package fr.ubx.poo.game;
 
-import fr.ubx.poo.model.decor.Bonus.Bonus;
+import fr.ubx.poo.model.decor.collectible.bonus.Bonus;
 import fr.ubx.poo.model.decor.Decor;
-import javafx.geometry.Pos;
 
 import java.util.*;
 import java.util.function.BiConsumer;

@@ -4,7 +4,6 @@ import java.io.*;
 import java.util.*;
 
 import fr.ubx.poo.model.go.character.Player;
-import javafx.geometry.Pos;
 
 import static fr.ubx.poo.game.WorldEntity.*;
 

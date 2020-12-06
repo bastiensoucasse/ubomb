@@ -1,13 +1,14 @@
 package fr.ubx.poo.model.decor.door;
 
 import fr.ubx.poo.model.decor.Decor;
+import fr.ubx.poo.model.go.character.Player;
 
 public class Door extends Decor {
     private final DoorDestination destination;
     private DoorState state;
 
-    public Door(DoorDestination destination, DoorState state) {
-        super(state == DoorState.OPENED);
+    public Door(final DoorDestination destination, final DoorState state) {
+        super(false, state == DoorState.OPENED);
         this.destination = destination;
         this.state = state;
     }
@@ -20,7 +21,7 @@ public class Door extends Decor {
         return state;
     }
 
-    public void setState(DoorState state) {
+    public void setState(final DoorState state) {
         this.state = state;
     }
 
@@ -30,7 +31,18 @@ public class Door extends Decor {
     }
 
     @Override
-    public Boolean canBePicked() {
-        return false;
+    public boolean canGetThrough() {
+        return state == DoorState.OPENED;
+    }
+
+    @Override
+    public boolean isOpenable(final Player player) {
+        return getState() == DoorState.CLOSED && player.getKeys() > 0;
+    }
+
+    public void open(final Player player) {
+        setState(DoorState.OPENED);
+        setWalkable(true);
+        player.removeKey();
     }
 }
