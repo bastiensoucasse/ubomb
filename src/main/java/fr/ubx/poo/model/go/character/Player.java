@@ -75,7 +75,7 @@ public class Player extends Character {
         if (getBombs() < 1)
             return null;
 
-        Bomb bomb = new Bomb(game, getPosition());
+        Bomb bomb = new Bomb(game, getPosition(), getBombsRange());
         removeBomb();
         game.getWorld().setChanged(true);
         return bomb;

@@ -4,8 +4,11 @@ import fr.ubx.poo.game.Game;
 import fr.ubx.poo.game.Position;
 
 public class Bomb extends GameObject {
-    public Bomb(final Game game, final Position position) {
+    private final int range;
+
+    public Bomb(final Game game, final Position position, final int range) {
         super(game, position);
+        this.range = range;
     }
 
     @Override
