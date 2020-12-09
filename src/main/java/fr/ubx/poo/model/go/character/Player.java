@@ -133,19 +133,8 @@ public class Player extends Character {
         if (decor == null)
             return true;
 
-        if (decor instanceof Box) {
-            Position new_pos = getDirection().nextPosition(position);
-            //Si la new pos est vide et qu'il n'y a pas de monstre et qu'elle est bien dans la dimension du jeu
-            if (game.getWorld().get(new_pos) == null && !game.getWorld().isThereAMonster(new_pos) && getDirection().nextPosition(position).inside(game.getWorld().getDimension())) {
-                return true;
-            }
-            //Cas pour les doubles caisses.
-            if (game.getWorld().get(new_pos) instanceof Box && game.getWorld().get(getDirection().nextPosition(new_pos)) == null
-                    && getDirection().nextPosition(new_pos).inside(game.getWorld().getDimension()) && !game.getWorld().isThereAMonster(getDirection().nextPosition(new_pos))) {
-                game.getWorld().setDecor(getDirection().nextPosition(new_pos), game.getWorld().get(new_pos));
-                game.getWorld().deleteDecor(new_pos);
-                game.getWorld().setChanged(true);
-            }
+        if (isThereAMovableBox()) {
+            return true;
         }
 
         return decor.isWalkable();
@@ -155,7 +144,8 @@ public class Player extends Character {
     public void doMove(final Direction direction) {
         Position position = direction.nextPosition(getPosition());
 
-        if (game.getWorld().get(position) instanceof Box) {
+        //IF basically there's a box
+        if (game.getWorld().get(position) != null && game.getWorld().get(position).canBeMoved()) {
             game.getWorld().setDecor(getDirection().nextPosition(position), game.getWorld().get(position));
             game.getWorld().deleteDecor(position);
             game.getWorld().setChanged(true);
@@ -165,6 +155,29 @@ public class Player extends Character {
 
         if (game.getWorld().isThereAMonster(getPosition()))
             removeLife();
+    }
+
+    public boolean isThereAMovableBox(){
+        Position nextPos = getDirection().nextPosition(getPosition());
+        Position next2pos = getDirection().nextPosition(nextPos);
+        Position next3pos = getDirection().nextPosition(next2pos);
+        //IF there's a box that can be moved
+        if (game.getWorld().get(nextPos).canBeMoved() && game.getWorld().get(next2pos) == null) {
+            return !game.getWorld().isThereAMonster(next2pos)
+                    && next2pos.inside(game.getWorld().getDimension());
+        }
+        //If there's a box behind another box and it can be moved
+        if(game.getWorld().get(nextPos).canBeMoved() && game.getWorld().get(next2pos).canBeMoved()){
+            if (game.getWorld().get(next3pos) == null
+                    && !game.getWorld().isThereAMonster(next3pos)
+                    && next3pos.inside(game.getWorld().getDimension())){
+                game.getWorld().setDecor(next3pos, game.getWorld().get(next2pos));
+                game.getWorld().deleteDecor(next2pos);
+                game.getWorld().setChanged(true);
+                return true;
+            }
+        }
+        return false;
     }
 
     public void update(final long now) {

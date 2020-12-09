@@ -5,4 +5,9 @@ public class Box extends Decor {
     public String toString() {
         return "Box";
     }
+
+    @Override
+    public boolean canBeMoved() {
+        return true;
+    }
 }
