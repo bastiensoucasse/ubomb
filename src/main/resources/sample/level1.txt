@@ -1,12 +1,12 @@
 _____H______
-SSS_S_SSSS__
+SSS_S_SSSS_M
 B___SBS__S__
-____SBS__S__
+_M__SBS__S__
 _B__SSS_KS__
 ____P____S__
 _TBT_____S__
 _TTT__+-_B__
-_________B__
+_M_______B__
 BSSSSBBSSSB_
 __n____M____
-___<___>_S__
+M__<___>_S__
