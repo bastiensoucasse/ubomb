@@ -1,6 +1,8 @@
 package fr.ubx.poo.engine;
 
 import fr.ubx.poo.game.*;
+import fr.ubx.poo.model.decor.door.DoorDestination;
+import fr.ubx.poo.model.decor.door.DoorState;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.view.sprite.Sprite;
@@ -37,17 +39,40 @@ public final class GameEngine {
     private Stage stage;
     private Sprite spritePlayer;
 
-    public GameEngine(final String windowTitle, Game game, final Stage stage) {
+    public GameEngine(final String windowTitle, final Game game, final Stage stage) {
         this.windowTitle = windowTitle;
         this.game = game;
+        this.stage = stage;
         this.player = game.getPlayer();
-        initialize(stage, game);
+        initialize();
         buildAndSetGameLoop();
     }
 
-    private void initialize(Stage stage, Game game) {
-        this.stage = stage;
-        loadLevel(false, true);
+    private void initialize() {
+        Group root = new Group();
+        layer = new Pane();
+
+        int height = game.getWorld().getDimension().height;
+        int width = game.getWorld().getDimension().width;
+        int sceneWidth = width * Sprite.size;
+        int sceneHeight = height * Sprite.size;
+        Scene scene = new Scene(root, sceneWidth, sceneHeight + StatusBar.height);
+        scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
+        stage.setTitle(windowTitle);
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
+        input = new Input(scene);
+        root.getChildren().add(layer);
+        statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
+
+        game.getWorld().forEach((pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
+
+        List<List<Monster>> monsters = game.getWorld().getMonster();
+        for (Monster m : monsters.get(game.getWorld().getLevel())) {
+            sprites.add(SpriteFactory.createMonster(layer, m));
+        }
+        spritePlayer = SpriteFactory.createPlayer(layer, player);
     }
 
     protected final void buildAndSetGameLoop() {
@@ -115,49 +140,17 @@ public final class GameEngine {
         }.start();
     }
 
-    private void loadLevel() {
-        loadLevel(false, false);
-    }
+    private void loadLevel(final boolean back) {
+        stage.close();
+        initialize();
 
-    private void loadLevel(boolean back) {
-        loadLevel(back, false);
-    }
-
-    private void loadLevel(boolean back, boolean skipPos) {
-        Group root = new Group();
-        layer = new Pane();
-
-        int height = game.getWorld().getDimension().height;
-        int width = game.getWorld().getDimension().width;
-        int sceneWidth = width * Sprite.size;
-        int sceneHeight = height * Sprite.size;
-        Scene scene = new Scene(root, sceneWidth, sceneHeight + StatusBar.height);
-        scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
-        stage.setTitle(windowTitle);
-        stage.setScene(scene);
-        stage.show();
-        input = new Input(scene);
-        root.getChildren().add(layer);
-        statusBar = new StatusBar(root, sceneWidth, sceneHeight, game);
-
-        game.getWorld().forEach((pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
-
-        List<List<Monster>> monsters = game.getWorld().getMonster();
-        for (Monster m : monsters.get(game.getWorld().getLevel())) {
-            sprites.add(SpriteFactory.createMonster(layer, m));
-        }
-        spritePlayer = SpriteFactory.createPlayer(layer, player);
-
-        if (!skipPos) {
-            try {
-                if (back)
-                    game.getPlayer().setPosition(game.getWorld().findDoorNextOpened());
-                else
-                    game.getPlayer().setPosition(game.getWorld().findDoorPrevOpened());
-            } catch (PositionNotFoundException e) {
-                System.err.println("Position not found : " + e.getLocalizedMessage());
-                throw new RuntimeException(e);
-            }
+        try {
+            if (back)
+                player.setPosition(game.getWorld().getOpenedDoorPosition(DoorDestination.NEXT));
+            else
+                player.setPosition(game.getWorld().getOpenedDoorPosition(DoorDestination.PREVIOUS));
+        } catch (PositionNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -168,7 +161,7 @@ public final class GameEngine {
             game.getWorld().setChanged(false);
         }
         if (game.getWorld().getLevelChange() == 1) {
-            loadLevel();
+            loadLevel(false);
             game.getWorld().setLevelChange(0);
         }
         if (game.getWorld().getLevelChange() == -1) {

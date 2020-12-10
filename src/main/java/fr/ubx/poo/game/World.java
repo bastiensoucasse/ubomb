@@ -2,6 +2,9 @@ package fr.ubx.poo.game;
 
 import fr.ubx.poo.model.decor.collectible.bonus.Bonus;
 import fr.ubx.poo.model.decor.Decor;
+import fr.ubx.poo.model.decor.door.Door;
+import fr.ubx.poo.model.decor.door.DoorDestination;
+import fr.ubx.poo.model.decor.door.DoorState;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.view.sprite.Sprite;
@@ -14,8 +17,8 @@ public class World {
     private final List<WorldEntity[][]> raw;
     private final List<Dimension> dimension = new ArrayList<>();
     private final List<Map<Position, Decor>> grid = new ArrayList<>();
-    private List<List<Monster>> monsters = new ArrayList<>();
-    private List<List<Bomb>> bombs = new ArrayList<>();
+    private final List<List<Monster>> monsters = new ArrayList<>();
+    private final List<List<Bomb>> bombs = new ArrayList<>();
     private int level = 0;
     private boolean changed = true;
     private int levelChange = 0;
@@ -26,8 +29,8 @@ public class World {
         for (int level = 0; level < raw.size(); level++) {
             dimension.add(new Dimension(raw.get(level).length, raw.get(level)[0].length));
             grid.add(WorldBuilder.build(raw.get(level), dimension.get(level)));
-            bombs.add(new ArrayList<>());
             monsters.add(new ArrayList<>());
+            bombs.add(new ArrayList<>());
         }
     }
 
@@ -46,25 +49,10 @@ public class World {
         throw new PositionNotFoundException("Player");
     }
 
-    public Position findDoorPrevOpened() throws PositionNotFoundException {
-        for (int x = 0; x < dimension.get(level).width; x++) {
-            for (int y = 0; y < dimension.get(level).height; y++) {
-                if (raw.get(level)[y][x] == WorldEntity.DoorPreviousOpened) {
-                    return new Position(x, y);
-                }
-            }
-        }
-        throw new PositionNotFoundException("Door");
-    }
-
-    public Position findDoorNextOpened() throws PositionNotFoundException {
-        for (int x = 0; x < dimension.get(level).width; x++) {
-            for (int y = 0; y < dimension.get(level).height; y++) {
-                if (raw.get(level)[y][x] == WorldEntity.DoorNextOpened) {
-                    return new Position(x, y);
-                }
-            }
-        }
+    public Position getOpenedDoorPosition(final DoorDestination destination) throws PositionNotFoundException {
+        for (Position p : grid.get(getLevel()).keySet())
+            if (get(p) instanceof Door && ((Door) get(p)).getState() == DoorState.OPENED && ((Door) get(p)).getDestination() == destination)
+                return p;
         throw new PositionNotFoundException("Door");
     }
 
@@ -123,11 +111,11 @@ public class World {
         return changed;
     }
 
-    public void setChanged(boolean changed) {
+    public void setChanged(final boolean changed) {
         this.changed = changed;
     }
 
-    public void setLevelChange(int levelChange) {
+    public void setLevelChange(final int levelChange) {
         this.levelChange = levelChange;
     }
 

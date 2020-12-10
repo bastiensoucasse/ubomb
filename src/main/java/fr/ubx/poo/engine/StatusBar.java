@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2020. Laurent Réveillère
- */
-
 package fr.ubx.poo.engine;
 
 import static fr.ubx.poo.view.image.ImageResource.*;
@@ -28,7 +24,6 @@ public class StatusBar {
 
     private final Game game;
     private final DropShadow ds = new DropShadow();
-
 
 
     public StatusBar(Group root, int sceneWidth, int sceneHeight, Game game) {
@@ -84,9 +79,9 @@ public class StatusBar {
         liveValue.setText(String.valueOf(game.getPlayer().getLives()));
         bombsValue.setText(String.valueOf(game.getPlayer().getBombs()));
         keyValue.setText(String.valueOf(game.getPlayer().getKeys()));
-        if(game.getPlayer().getBombs() > 0)
+        if (game.getPlayer().getBombs() > 0)
             rangeValue.setText(String.valueOf(game.getPlayer().getBombsRange()));
-        else{
+        else {
             rangeValue.setText("0");
         }
     }

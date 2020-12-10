@@ -155,6 +155,10 @@ public class Player extends Character {
 
         if (game.getWorld().isThereAMonster(getPosition()))
             removeLife();
+
+        Decor decor = game.getWorld().get(getPosition());
+        if (decor != null && decor.canGetThrough())
+            travel((Door) decor);
     }
 
     public boolean isThereAMovableBox(){
@@ -185,9 +189,6 @@ public class Player extends Character {
         if (decor != null) {
             if (decor.isCollectable())
                 collect((Collectible) decor);
-
-            if (decor.canGetThrough())
-                travel((Door) decor);
         }
 
         if (openRequested) {
