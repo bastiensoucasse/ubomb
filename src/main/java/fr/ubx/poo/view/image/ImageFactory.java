@@ -27,7 +27,7 @@ public final class ImageFactory {
     };
 
     private final ImageResource[] bombs = new ImageResource[]{
-            BOMB1, BOMB2, BOMB3, BOMB4,
+            EXPLOSION, BOMB1, BOMB2, BOMB3, BOMB4,
     };
 
     private ImageFactory() {

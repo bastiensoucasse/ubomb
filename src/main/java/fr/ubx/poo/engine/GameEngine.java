@@ -21,10 +21,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public final class GameEngine {
 
@@ -190,23 +187,34 @@ public final class GameEngine {
 
         for(Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())){
             sprites.add(SpriteFactory.createBomb(layer, b));
+            createTimer();
         }
     }
 
     //-------------- WIP -------------------
-    void createTimer(int i) {
+    void createTimer() {
         TimerTask timertask = new TimerTask() {
             @Override
             public void run() {
-                //sprites.add(SpriteFactory.createBomb(layer, bombs.get(i)));
-                SpriteBomb b = (SpriteBomb) sprites.get(sprites.size() - 1);
-                b.setSprite_nb(3);
-                b.updateImage();
+                    System.out.println("Task performed on " + new Date());
+                    for(int i=4; i>=0; i--){
+                        SpriteBomb b = (SpriteBomb) sprites.get(sprites.size() - 1);
+                        b.setSprite_nb(i);
+                        b.updateImage();
+                        sprites.remove(b);
+                        sprites.add(b);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
             }
         };
 
         Timer timer = new Timer("Bomb timer");
-        timer.schedule(timertask, 0, 1000);
+        timer.schedule(timertask, 0, 4000);
+
     }
 
     private void render() {

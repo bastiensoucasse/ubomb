@@ -21,4 +21,5 @@ public class SpriteBomb extends SpriteGameObject {
         if(n >= 0 && n<= 4)
             sprite_nb = n;
     }
+
 }
