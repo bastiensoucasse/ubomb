@@ -2,6 +2,10 @@ package fr.ubx.poo.game;
 
 import fr.ubx.poo.model.decor.collectible.bonus.Bonus;
 import fr.ubx.poo.model.decor.Decor;
+import fr.ubx.poo.model.go.Bomb;
+import fr.ubx.poo.model.go.character.Monster;
+import fr.ubx.poo.view.sprite.Sprite;
+import fr.ubx.poo.view.sprite.SpriteFactory;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -10,6 +14,8 @@ public class World {
     private final List<WorldEntity[][]> raw;
     private final List<Dimension> dimension = new ArrayList<>();
     private final List<Map<Position, Decor>> grid = new ArrayList<>();
+    private List<List<Monster>> monsters = new ArrayList<>();
+    private List<List<Bomb>> bombs = new ArrayList<>();
     private int level = 0;
     private boolean changed = true;
     private int levelChange = 0;
@@ -20,6 +26,8 @@ public class World {
         for (int level = 0; level < raw.size(); level++) {
             dimension.add(new Dimension(raw.get(level).length, raw.get(level)[0].length));
             grid.add(WorldBuilder.build(raw.get(level), dimension.get(level)));
+            bombs.add(new ArrayList<>());
+            monsters.add(new ArrayList<>());
         }
     }
 
@@ -60,7 +68,7 @@ public class World {
         throw new PositionNotFoundException("Door");
     }
 
-    public List<Position> findMonster() {
+    public List<Position> findMonster(int level) {
         List<Position> position_of_monsters = new ArrayList<Position>();
         for (int x = 0; x < dimension.get(level).width; x++) {
             for (int y = 0; y < dimension.get(level).height; y++) {
@@ -150,5 +158,17 @@ public class World {
                     itr.remove();
                 }
         }
+    }
+
+    public List<List<Bomb>> getBombs() {
+        return bombs;
+    }
+
+    public List<List<Monster>> getMonster() {
+        return monsters;
+    }
+
+    public List<WorldEntity[][]> getRaw() {
+        return raw;
     }
 }

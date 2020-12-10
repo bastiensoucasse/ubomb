@@ -3,6 +3,8 @@ package fr.ubx.poo.game;
 import java.io.*;
 import java.util.*;
 
+import fr.ubx.poo.model.go.Bomb;
+import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.model.go.character.Player;
 
 import static fr.ubx.poo.game.WorldEntity.*;
@@ -30,6 +32,7 @@ public class Game {
             System.err.println("Position not found : " + e.getLocalizedMessage());
             throw new RuntimeException(e);
         }
+        createMonsters();
     }
 
     public int getLevels() {
@@ -43,6 +46,20 @@ public class Game {
     public World getWorld() {
         return world;
     }
+
+    public void createMonsters(){
+        for(int i=0; i<getWorld().getRaw().size(); i++){
+            List<Position> pos_of_monster = getWorld().findMonster(i);
+            for (Position pos : pos_of_monster) {
+                world.getMonster().get(i).add(new Monster(this, pos));
+            }
+        }
+    }
+
+    public void createBomb() {
+        getWorld().getBombs().get(getWorld().getLevel()).add(new Bomb(this, getPlayer().getPosition(), player.getBombsRange()));
+    }
+
 
     public Player getPlayer() {
         return player;
