@@ -38,6 +38,7 @@ public abstract class Character extends GameObject implements Movable {
     }
 
     public void removeLife() {
+        System.out.println("Monster attack: " + getLives() + " lives remaining.");
         lives--;
     }
 

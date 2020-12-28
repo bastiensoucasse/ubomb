@@ -152,8 +152,20 @@ public final class GameEngine {
         }
     }
 
+    // Called each frame
     private void update(long now) {
+        // Update the player
         player.update(now);
+
+        // Update all the monsters
+        List<Monster> monsters = game.getWorld().getMonster().get(game.getWorld().getLevel());
+        monsters.forEach(m -> m.update(now));
+        game.getWorld().setChanged(true);
+
+        // Check for any monster attack
+        if (game.getWorld().isThereAMonster(player.getPosition()))
+            player.removeLife();
+
         if (game.getWorld().isChanged()) {
             redrawTheSprites();
             game.getWorld().setChanged(false);

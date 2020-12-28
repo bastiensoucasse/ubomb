@@ -6,6 +6,7 @@ import fr.ubx.poo.model.decor.door.Door;
 import fr.ubx.poo.model.decor.door.DoorDestination;
 import fr.ubx.poo.model.decor.door.DoorState;
 import fr.ubx.poo.model.go.Bomb;
+import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.view.sprite.Sprite;
 import fr.ubx.poo.view.sprite.SpriteFactory;
@@ -69,9 +70,14 @@ public class World {
     }
 
     public boolean isThereAMonster(Position pos) {
-        if(!pos.inside(dimension.get(level)))
+        if (!pos.inside(dimension.get(level)))
             return false;
-        return raw.get(level)[pos.y][pos.x] == WorldEntity.Monster;
+
+        for (Monster m : getMonster().get(getLevel()))
+            if (m.getPosition() == pos)
+                return true;
+
+        return false;
     }
 
     public Decor get(Position position) {
@@ -139,11 +145,11 @@ public class World {
     }
 
     public void updateWorld() {
-        Iterator<Map.Entry<Position,Decor>> itr = grid.get(level).entrySet().iterator();
+        Iterator<Map.Entry<Position, Decor>> itr = grid.get(level).entrySet().iterator();
         while (itr.hasNext()) {
-            Map.Entry<Position,Decor> entry = itr.next();
-            if(entry.getValue() instanceof Bonus)
-                if(!((Bonus) entry.getValue()).getVisibility()){
+            Map.Entry<Position, Decor> entry = itr.next();
+            if (entry.getValue() instanceof Bonus)
+                if (!((Bonus) entry.getValue()).getVisibility()) {
                     itr.remove();
                 }
         }
@@ -163,9 +169,9 @@ public class World {
 
     public void removeBomb(Position position) {
         Iterator<Bomb> it = bombs.get(getLevel()).iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             Bomb u = it.next();
-            if(u.getPosition().equals(position))
+            if (u.getPosition().equals(position))
                 it.remove();
         }
     }

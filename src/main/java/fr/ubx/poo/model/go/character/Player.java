@@ -154,9 +154,6 @@ public class Player extends Character {
 
         setPosition(position);
 
-        if (game.getWorld().isThereAMonster(getPosition()))
-            removeLife();
-
         Decor decor = game.getWorld().get(getPosition());
         if (decor != null && decor.canGetThrough())
             travel((Door) decor);
