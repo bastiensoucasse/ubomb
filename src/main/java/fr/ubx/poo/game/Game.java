@@ -58,8 +58,8 @@ public class Game {
 
     public void createBomb() {
         getWorld().getBombs().get(getWorld().getLevel()).add(new Bomb(this, getPlayer().getPosition(), player.getBombsRange()));
-    }
 
+    }
 
     public Player getPlayer() {
         return player;

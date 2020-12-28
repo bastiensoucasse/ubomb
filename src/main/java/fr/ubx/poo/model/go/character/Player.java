@@ -18,6 +18,7 @@ public class Player extends Character {
     private int keys;
     private int bombs;
     private int bombsRange;
+    private boolean bombdropped = false;
 
     public Player(final Game game, final Position position) {
         super(game, position, Direction.S, game.getLives());
@@ -77,7 +78,7 @@ public class Player extends Character {
 
         Bomb bomb = new Bomb(game, getPosition(), getBombsRange());
         removeBomb();
-        game.getWorld().setChanged(true);
+        bombdropped = true;
         return bomb;
     }
 
@@ -202,5 +203,12 @@ public class Player extends Character {
                 doMove(getDirection());
             moveRequested = false;
         }
+    }
+
+    public boolean hasDroppedABomb() {
+        return bombdropped;
+    }
+    public void setBombDropped(boolean b){
+        bombdropped = b;
     }
 }

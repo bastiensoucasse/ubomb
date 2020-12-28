@@ -5,7 +5,8 @@ import fr.ubx.poo.view.image.ImageFactory;
 import javafx.scene.layout.Pane;
 
 public class SpriteBomb extends SpriteGameObject {
-    private int sprite_nb = 0;
+    private int sprite_nb = 4;
+    private Bomb b;
     public SpriteBomb(Pane layer, Bomb bomb) {
         super(layer,null,  bomb);
         updateImage();

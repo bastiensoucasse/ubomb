@@ -78,6 +78,7 @@ public class World {
         return grid.get(level).get(position);
     }
 
+
     public void deleteDecor(Position p) {
         grid.get(level).remove(p);
     }
@@ -158,5 +159,14 @@ public class World {
 
     public List<WorldEntity[][]> getRaw() {
         return raw;
+    }
+
+    public void removeBomb(Position position) {
+        Iterator<Bomb> it = bombs.get(getLevel()).iterator();
+        while(it.hasNext()){
+            Bomb u = it.next();
+            if(u.getPosition().equals(position))
+                it.remove();
+        }
     }
 }
