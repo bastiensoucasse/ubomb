@@ -129,6 +129,8 @@ public class Player extends Character {
         if (!position.inside(game.getWorld().getDimension()))
             return false;
 
+        if(isThereABomb())
+            return false;
         Decor decor = game.getWorld().get(position);
 
         if (decor == null)
@@ -140,6 +142,7 @@ public class Player extends Character {
 
         return decor.isWalkable();
     }
+
 
     @Override
     public void doMove(final Direction direction) {

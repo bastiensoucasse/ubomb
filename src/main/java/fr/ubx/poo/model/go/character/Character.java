@@ -4,6 +4,7 @@ import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Game;
 import fr.ubx.poo.game.Position;
 import fr.ubx.poo.model.Movable;
+import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.GameObject;
 
 public abstract class Character extends GameObject implements Movable {
@@ -40,6 +41,14 @@ public abstract class Character extends GameObject implements Movable {
     public void removeLife() {
         System.out.println("Monster attack: " + getLives() + " lives remaining.");
         lives--;
+    }
+    public boolean isThereABomb(){
+        Position nextPos = getDirection().nextPosition(getPosition());
+        for(Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())){
+            if(b.getPosition().equals(nextPos))
+                return  true;
+        }
+        return false;
     }
 
     public boolean isAlive() {

@@ -74,7 +74,7 @@ public class World {
             return false;
 
         for (Monster m : getMonster().get(getLevel()))
-            if (m.getPosition() == pos)
+            if (m.getPosition().equals(pos))
                 return true;
 
         return false;
@@ -175,4 +175,13 @@ public class World {
                 it.remove();
         }
     }
+
+    public Bomb BombExplosed() {
+        for(Bomb b : bombs.get(getLevel())){
+            if(b.hasExplosed())
+                return b;
+        }
+        return null;
+    }
+
 }

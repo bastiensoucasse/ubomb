@@ -20,6 +20,8 @@ public class Monster extends Character {
 
         if (!position.inside(game.getWorld().getDimension()))
             return false;
+        if(isThereABomb())
+            return false;
 
         Decor decor = game.getWorld().get(position);
         return decor == null || decor.isWalkable();

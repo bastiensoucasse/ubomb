@@ -1,8 +1,8 @@
 package fr.ubx.poo.engine;
 
 import fr.ubx.poo.game.*;
+import fr.ubx.poo.model.decor.Decor;
 import fr.ubx.poo.model.decor.door.DoorDestination;
-import fr.ubx.poo.model.decor.door.DoorState;
 import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.model.go.character.Monster;
 import fr.ubx.poo.view.sprite.Sprite;
@@ -157,10 +157,16 @@ public final class GameEngine {
         // Update the player
         player.update(now);
 
+        Bomb b = game.getWorld().BombExplosed();
+
+        if(b !=null){
+            b.setExplosion(false);
+            destruction(b);
+        }
         // Update all the monsters
-        List<Monster> monsters = game.getWorld().getMonster().get(game.getWorld().getLevel());
-        monsters.forEach(m -> m.update(now));
-        game.getWorld().setChanged(true);
+       List<Monster> monsters = game.getWorld().getMonster().get(game.getWorld().getLevel());
+        //monsters.forEach(m -> m.update(now));
+        //game.getWorld().setChanged(true);
 
         // Check for any monster attack
         if (game.getWorld().isThereAMonster(player.getPosition()))
@@ -192,6 +198,34 @@ public final class GameEngine {
         }
     }
 
+    private void destruction(Bomb b) {
+        for(int i=1; i<=b.getRange(); i++){
+            for(Direction d : Direction.values()){
+                Position n_pos = d.nextPosition(b.getPosition(), i);
+                //PLAYSTATION FOR THE PLAYERS
+                if(n_pos.equals(player.getPosition())){
+                    player.removeLife();
+                }
+                //MONSTER ANIHILATION
+                Iterator<Monster> itr = game.getWorld().getMonster().get(game.getWorld().getLevel()).iterator();
+                while(itr.hasNext()){
+                    Monster u = itr.next();
+                    if(u.getPosition().equals(n_pos))
+                    {
+                        u.removeLife();
+                        if(u.getLives() == 0)
+                            itr.remove();
+                    }
+                }
+                //FOR THE BOXES && BONUS
+                Decor de = game.getWorld().get(n_pos);
+                if(de != null && (de.canBeMoved() || de.isCollectable()))
+                    game.getWorld().deleteDecor(n_pos);
+            }
+        }
+        redrawTheSprites();
+    }
+
     private void redrawTheSprites() {
         sprites.forEach(Sprite::remove);
         sprites.clear();
@@ -205,13 +239,15 @@ public final class GameEngine {
     }
 
     private void drawBombs(){
-        ListIterator<Bomb> iter = game.getWorld().getBombs().get(game.getWorld().getLevel()).listIterator();
-        while(iter.hasNext()){
-            Sprite sb = SpriteFactory.createBomb(layer, iter.next());
-            sbomb.add((SpriteBomb) sb);
-            sprites.add(sb);
-            createTimer(sb);
-            iter.remove();
+
+        for(Bomb b: game.getWorld().getBombs().get(game.getWorld().getLevel())){
+            if(!b.isDropped()){
+                Sprite sb = SpriteFactory.createBomb(layer, b);
+                sbomb.add((SpriteBomb) sb);
+                sprites.add(sb);
+                createTimer(sb);
+                b.setDropped();
+            }
         }
     }
 
@@ -226,10 +262,20 @@ public final class GameEngine {
                     for(int i=4; i>=0; i--){
                         sb.setSprite_nb(i);
                         sb.updateImage();
+                        if(i==0){
+                            for(Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())){
+                                if(b.getPosition().equals(sb.getPosition())){
+                                    b.setExplosion(true);
+                                }
+                            }
+                        }
                         try {
                             Thread.sleep(1000);
                             if(i==0){
-                                sprites.remove(sb);
+                                Platform.runLater(()-> {
+                                    sbomb.remove(sb);
+                                    redrawTheSprites();
+                                });
                                 game.getWorld().removeBomb(sb.getPosition());
                                 timer.cancel();
                             }
