@@ -6,10 +6,7 @@ import fr.ubx.poo.model.decor.door.Door;
 import fr.ubx.poo.model.decor.door.DoorDestination;
 import fr.ubx.poo.model.decor.door.DoorState;
 import fr.ubx.poo.model.go.Bomb;
-import fr.ubx.poo.model.go.GameObject;
 import fr.ubx.poo.model.go.character.Monster;
-import fr.ubx.poo.view.sprite.Sprite;
-import fr.ubx.poo.view.sprite.SpriteFactory;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -69,13 +66,53 @@ public class World {
         return position_of_monsters;
     }
 
-    public boolean isThereAMonster(Position pos) {
-        if (!pos.inside(dimension.get(level)))
-            return false;
+    public boolean isThereAMonster(Position position) {
+        if (!position.inside(dimension.get(level))) return false;
 
-        for (Monster m : getMonster().get(getLevel()))
-            if (m.getPosition().equals(pos))
+        for (Monster m : monsters.get(level))
+            if (m.getPosition().equals(position))
                 return true;
+
+        return false;
+    }
+
+    public boolean isThereABomb(Position position) {
+        if (!position.inside(dimension.get(level))) return false;
+
+        for (Bomb b : bombs.get(level)) {
+            if (b.getPosition().equals(position))
+                return true;
+        }
+
+        return false;
+    }
+
+    public boolean isThereAMovableBox(Position position1, Direction direction) {
+        if (!position1.inside(dimension.get(level))) return false;
+
+        Decor decor1 = get(position1);
+        if (decor1 == null) return false;
+
+        if (decor1.canBeMoved()) {
+            Position position2 = direction.nextPosition(position1);
+            if (!position2.inside(dimension.get(level))) return false;
+
+            Decor decor2 = get(position2);
+            if (decor2 == null) return !isThereAMonster(position2) && !isThereABomb(position2);
+
+            if (decor2.canBeMoved()) {
+                Position position3 = direction.nextPosition(position2);
+                if (!position3.inside(dimension.get(level))) return false;
+
+                Decor decor3 = get(position3);
+                if (decor3 == null && !isThereAMonster(position3) && !isThereABomb(position3)) {
+                    setDecor(position3, get(position2));
+                    deleteDecor(position2);
+                    setChanged(true);
+                    return true;
+                }
+            }
+        }
 
         return false;
     }
@@ -159,7 +196,7 @@ public class World {
         return bombs;
     }
 
-    public List<List<Monster>> getMonster() {
+    public List<List<Monster>> getMonsters() {
         return monsters;
     }
 
@@ -177,8 +214,8 @@ public class World {
     }
 
     public Bomb BombExplosed() {
-        for(Bomb b : bombs.get(getLevel())){
-            if(b.hasExplosed())
+        for (Bomb b : bombs.get(getLevel())) {
+            if (b.hasExplosed())
                 return b;
         }
         return null;

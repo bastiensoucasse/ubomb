@@ -9,7 +9,7 @@ import fr.ubx.poo.model.go.GameObject;
 
 public abstract class Character extends GameObject implements Movable {
     private Direction direction;
-    private int lives;
+    protected int lives;
 
     public Character(final Game game, final Position position, final Direction direction, final int lives) {
         super(game, position);
@@ -39,16 +39,7 @@ public abstract class Character extends GameObject implements Movable {
     }
 
     public void removeLife() {
-        System.out.println("Monster attack: " + getLives() + " lives remaining.");
         lives--;
-    }
-    public boolean isThereABomb(){
-        Position nextPos = getDirection().nextPosition(getPosition());
-        for(Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())){
-            if(b.getPosition().equals(nextPos))
-                return  true;
-        }
-        return false;
     }
 
     public boolean isAlive() {

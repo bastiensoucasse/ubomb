@@ -34,8 +34,9 @@ public final class GameEngine {
     private StatusBar statusBar;
     private Pane layer;
     private Input input;
-    private Stage stage;
+    private final Stage stage;
     private Sprite spritePlayer;
+    private long lastTime = -1;
 
     public GameEngine(final String windowTitle, final Game game, final Stage stage) {
         this.windowTitle = windowTitle;
@@ -66,7 +67,7 @@ public final class GameEngine {
 
         game.getWorld().forEach((pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
 
-        List<List<Monster>> monsters = game.getWorld().getMonster();
+        List<List<Monster>> monsters = game.getWorld().getMonsters();
         for (Monster m : monsters.get(game.getWorld().getLevel())) {
             sprites.add(SpriteFactory.createMonster(layer, m));
         }
@@ -84,7 +85,6 @@ public final class GameEngine {
 
                 // Graphic update
                 render();
-                statusBar.update(game);
             }
         };
     }
@@ -100,7 +100,7 @@ public final class GameEngine {
         }
         if (input.isBomb()) {
             Bomb b = player.dropBomb();
-            if (b != null){
+            if (b != null) {
                 game.createBomb();
             }
         }
@@ -157,26 +157,32 @@ public final class GameEngine {
         // Update the player
         player.update(now);
 
+        // Stuff to do every second
+        if (now >= lastTime + 1000000000 || lastTime == -1) {
+            // Last time we entered this loop is now
+            lastTime = now;
+
+            // Update all the monsters
+            game.getWorld().getMonsters().get(game.getWorld().getLevel()).forEach(m -> m.update(now));
+            game.getWorld().setChanged(true);
+
+            // Check for any monster attack
+            if (game.getWorld().isThereAMonster(player.getPosition()))
+                player.removeLife();
+        }
+
         Bomb b = game.getWorld().BombExplosed();
 
-        if(b !=null){
+        if (b != null) {
             b.setExplosion(false);
             destruction(b);
         }
-        // Update all the monsters
-       List<Monster> monsters = game.getWorld().getMonster().get(game.getWorld().getLevel());
-        //monsters.forEach(m -> m.update(now));
-        //game.getWorld().setChanged(true);
-
-        // Check for any monster attack
-        if (game.getWorld().isThereAMonster(player.getPosition()))
-            player.removeLife();
 
         if (game.getWorld().isChanged()) {
             redrawTheSprites();
             game.getWorld().setChanged(false);
         }
-        if(player.hasDroppedABomb()){
+        if (player.hasDroppedABomb()) {
             drawBombs();
             player.setBombDropped(false);
         }
@@ -217,24 +223,24 @@ public final class GameEngine {
         if (de != null && !de.canBeMoved())
             return;
 
-            if (pos.equals(player.getPosition())) {
-                player.removeLife();
+        if (pos.equals(player.getPosition())) {
+            player.removeLife();
+        }
+        //MONSTER ANIHILATION
+        Iterator<Monster> itr = game.getWorld().getMonsters().get(game.getWorld().getLevel()).iterator();
+        while (itr.hasNext()) {
+            Monster u = itr.next();
+            if (u.getPosition().equals(pos)) {
+                u.removeLife();
+                if (u.getLives() == 0)
+                    itr.remove();
             }
-            //MONSTER ANIHILATION
-            Iterator<Monster> itr = game.getWorld().getMonster().get(game.getWorld().getLevel()).iterator();
-            while (itr.hasNext()) {
-                Monster u = itr.next();
-                if (u.getPosition().equals(pos)) {
-                    u.removeLife();
-                    if (u.getLives() == 0)
-                        itr.remove();
-                }
-            }
-            //FOR THE BOXES && BONUS
-            if (de != null && de.isCollectable())
-                game.getWorld().deleteDecor(pos);
-            redrawTheSprites();
-            destruct_recursive(d, d.nextPosition(pos), i - 1);
+        }
+        //FOR THE BOXES && BONUS
+        if (de != null && de.isCollectable())
+            game.getWorld().deleteDecor(pos);
+        redrawTheSprites();
+        destruct_recursive(d, d.nextPosition(pos), i - 1);
     }
 
     private void redrawTheSprites() {
@@ -243,16 +249,15 @@ public final class GameEngine {
 
         game.getWorld().updateWorld();
         game.getWorld().forEach((pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
-        for(Monster m : game.getWorld().getMonster().get(game.getWorld().getLevel())){
+        for (Monster m : game.getWorld().getMonsters().get(game.getWorld().getLevel())) {
             sprites.add(SpriteFactory.createMonster(layer, m));
-         }
+        }
         sprites.addAll(sbomb);
     }
 
-    private void drawBombs(){
-
-        for(Bomb b: game.getWorld().getBombs().get(game.getWorld().getLevel())){
-            if(!b.isDropped()){
+    private void drawBombs() {
+        for (Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())) {
+            if (!b.isDropped()) {
                 Sprite sb = SpriteFactory.createBomb(layer, b);
                 sbomb.add((SpriteBomb) sb);
                 sprites.add(sb);
@@ -269,32 +274,32 @@ public final class GameEngine {
         TimerTask timertask = new TimerTask() {
             @Override
             public void run() {
-                    System.out.println("Task performed on " + new Date());
-                    for(int i=4; i>=0; i--){
-                        sb.setSprite_nb(i);
-                        sb.updateImage();
-                        if(i==0){
-                            for(Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())){
-                                if(b.getPosition().equals(sb.getPosition())){
-                                    b.setExplosion(true);
-                                }
+                System.out.println("Task performed on " + new Date());
+                for (int i = 4; i >= 0; i--) {
+                    sb.setSprite_nb(i);
+                    sb.updateImage();
+                    if (i == 0) {
+                        for (Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())) {
+                            if (b.getPosition().equals(sb.getPosition())) {
+                                b.setExplosion(true);
                             }
-                        }
-                        try {
-                            Thread.sleep(1000);
-                            if(i==0){
-                                Platform.runLater(()-> {
-                                    sbomb.remove(sb);
-                                    redrawTheSprites();
-                                });
-                                game.getWorld().removeBomb(sb.getPosition());
-                                timer.cancel();
-                            }
-
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
                         }
                     }
+                    try {
+                        Thread.sleep(1000);
+                        if (i == 0) {
+                            Platform.runLater(() -> {
+                                sbomb.remove(sb);
+                                redrawTheSprites();
+                            });
+                            game.getWorld().removeBomb(sb.getPosition());
+                            timer.cancel();
+                        }
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         };
         timer.schedule(timertask, new Date());
@@ -303,6 +308,8 @@ public final class GameEngine {
     private void render() {
         sprites.forEach(Sprite::render);
         spritePlayer.render();
+
+        statusBar.update(game);
     }
 
     public void start() {

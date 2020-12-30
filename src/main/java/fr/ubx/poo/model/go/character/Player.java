@@ -19,6 +19,7 @@ public class Player extends Character {
     private int bombs;
     private int bombsRange;
     private boolean bombdropped = false;
+    private boolean safe = false;
 
     public Player(final Game game, final Position position) {
         super(game, position, Direction.S, game.getLives());
@@ -70,6 +71,24 @@ public class Player extends Character {
 
     public void decreaseBombsRange() {
         bombsRange--;
+    }
+
+    @Override
+    public void removeLife() {
+        if (safe) {
+            System.out.println("Safe for now!");
+            return;
+        }
+
+        lives--;
+        safe = true;
+
+        new java.util.Timer().schedule(new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        safe = false;
+                    }
+                }, 1000);
     }
 
     public Bomb dropBomb() {
@@ -126,19 +145,12 @@ public class Player extends Character {
     public boolean canMove(final Direction direction) {
         Position position = direction.nextPosition(getPosition());
 
-        if (!position.inside(game.getWorld().getDimension()))
-            return false;
+        if (!position.inside(game.getWorld().getDimension()) || game.getWorld().isThereABomb(position)) return false;
+        if (game.getWorld().isThereAMovableBox(position, direction)) return true;
 
-        if(isThereABomb())
-            return false;
         Decor decor = game.getWorld().get(position);
-
         if (decor == null)
             return true;
-
-        if (isThereAMovableBox()) {
-            return true;
-        }
 
         return decor.isWalkable();
     }
@@ -160,29 +172,10 @@ public class Player extends Character {
         Decor decor = game.getWorld().get(getPosition());
         if (decor != null && decor.canGetThrough())
             travel((Door) decor);
-    }
 
-    public boolean isThereAMovableBox(){
-        Position nextPos = getDirection().nextPosition(getPosition());
-        Position next2pos = getDirection().nextPosition(nextPos);
-        Position next3pos = getDirection().nextPosition(next2pos);
-        //IF there's a box that can be moved
-        if (game.getWorld().get(nextPos).canBeMoved() && game.getWorld().get(next2pos) == null) {
-            return !game.getWorld().isThereAMonster(next2pos)
-                    && next2pos.inside(game.getWorld().getDimension());
-        }
-        //If there's a box behind another box and it can be moved
-        if(game.getWorld().get(nextPos).canBeMoved() && game.getWorld().get(next2pos).canBeMoved()){
-            if (game.getWorld().get(next3pos) == null
-                    && !game.getWorld().isThereAMonster(next3pos)
-                    && next3pos.inside(game.getWorld().getDimension())){
-                game.getWorld().setDecor(next3pos, game.getWorld().get(next2pos));
-                game.getWorld().deleteDecor(next2pos);
-                game.getWorld().setChanged(true);
-                return true;
-            }
-        }
-        return false;
+        // Check for any monster attack
+        if (game.getWorld().isThereAMonster(getPosition()))
+            removeLife();
     }
 
     public void update(final long now) {
@@ -208,7 +201,8 @@ public class Player extends Character {
     public boolean hasDroppedABomb() {
         return bombdropped;
     }
-    public void setBombDropped(boolean b){
+
+    public void setBombDropped(boolean b) {
         bombdropped = b;
     }
 }
