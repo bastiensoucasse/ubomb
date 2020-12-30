@@ -33,6 +33,7 @@ public enum Direction {
     },
     ;
 
+
     private static final Random randomGenerator = new Random();
 
     /***

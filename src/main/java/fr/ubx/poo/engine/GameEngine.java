@@ -199,31 +199,42 @@ public final class GameEngine {
     }
 
     private void destruction(Bomb b) {
-        for(int i=1; i<=b.getRange(); i++){
-            for(Direction d : Direction.values()){
-                Position n_pos = d.nextPosition(b.getPosition(), i);
-                //PLAYSTATION FOR THE PLAYERS
-                if(n_pos.equals(player.getPosition())){
-                    player.removeLife();
-                }
-                //MONSTER ANIHILATION
-                Iterator<Monster> itr = game.getWorld().getMonster().get(game.getWorld().getLevel()).iterator();
-                while(itr.hasNext()){
-                    Monster u = itr.next();
-                    if(u.getPosition().equals(n_pos))
-                    {
-                        u.removeLife();
-                        if(u.getLives() == 0)
-                            itr.remove();
-                    }
-                }
-                //FOR THE BOXES && BONUS
-                Decor de = game.getWorld().get(n_pos);
-                if(de != null && (de.canBeMoved() || de.isCollectable()))
-                    game.getWorld().deleteDecor(n_pos);
-            }
+        destruct_recursive(Direction.N, Direction.N.nextPosition(b.getPosition()), b.getRange());
+        destruct_recursive(Direction.S, Direction.S.nextPosition(b.getPosition()), b.getRange());
+        destruct_recursive(Direction.W, Direction.W.nextPosition(b.getPosition()), b.getRange());
+        destruct_recursive(Direction.E, Direction.E.nextPosition(b.getPosition()), b.getRange());
+    }
+
+    private void destruct_recursive(Direction d, Position pos, int i) {
+        if (i == 0)
+            return;
+        Decor de = game.getWorld().get(pos);
+
+        if (de != null && (de.canBeMoved())) {
+            game.getWorld().deleteDecor(pos);
+            return;
         }
-        redrawTheSprites();
+        if (de != null && !de.canBeMoved())
+            return;
+
+            if (pos.equals(player.getPosition())) {
+                player.removeLife();
+            }
+            //MONSTER ANIHILATION
+            Iterator<Monster> itr = game.getWorld().getMonster().get(game.getWorld().getLevel()).iterator();
+            while (itr.hasNext()) {
+                Monster u = itr.next();
+                if (u.getPosition().equals(pos)) {
+                    u.removeLife();
+                    if (u.getLives() == 0)
+                        itr.remove();
+                }
+            }
+            //FOR THE BOXES && BONUS
+            if (de != null && de.isCollectable())
+                game.getWorld().deleteDecor(pos);
+            redrawTheSprites();
+            destruct_recursive(d, d.nextPosition(pos), i - 1);
     }
 
     private void redrawTheSprites() {
