@@ -2,7 +2,6 @@ package fr.ubx.poo.model.go.character;
 
 import fr.ubx.poo.game.Direction;
 import fr.ubx.poo.game.Position;
-import fr.ubx.poo.model.decor.Box;
 import fr.ubx.poo.model.decor.Decor;
 import fr.ubx.poo.model.decor.collectible.Collectible;
 import fr.ubx.poo.model.decor.door.Door;
@@ -18,7 +17,8 @@ public class Player extends Character {
     private int keys;
     private int bombs;
     private int bombsRange;
-    private boolean bombdropped = false;
+    private boolean bombDropped = false;
+    private boolean lastBomb = false;
     private boolean safe = false;
 
     public Player(final Game game, final Position position) {
@@ -97,7 +97,9 @@ public class Player extends Character {
 
         Bomb bomb = new Bomb(game, getPosition(), getBombsRange());
         removeBomb();
-        bombdropped = true;
+        bombDropped = true;
+        if(getBombs() < 1);
+            lastBomb = true;
         return bomb;
     }
 
@@ -199,10 +201,14 @@ public class Player extends Character {
     }
 
     public boolean hasDroppedABomb() {
-        return bombdropped;
+        return bombDropped;
+    }
+
+    public boolean wasLastBombed(){
+        return lastBomb;
     }
 
     public void setBombDropped(boolean b) {
-        bombdropped = b;
+        bombDropped = b;
     }
 }

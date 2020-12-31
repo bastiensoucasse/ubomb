@@ -176,6 +176,8 @@ public final class GameEngine {
         if (b != null) {
             b.setExplosion(false);
             destruction(b);
+            if(game.getPlayer().wasLastBombed())
+                game.getPlayer().addBomb();
         }
 
         if (game.getWorld().isChanged()) {
@@ -205,23 +207,29 @@ public final class GameEngine {
     }
 
     private void destruction(Bomb b) {
-        destruct_recursive(Direction.N, Direction.N.nextPosition(b.getPosition()), b.getRange());
-        destruct_recursive(Direction.S, Direction.S.nextPosition(b.getPosition()), b.getRange());
-        destruct_recursive(Direction.W, Direction.W.nextPosition(b.getPosition()), b.getRange());
-        destruct_recursive(Direction.E, Direction.E.nextPosition(b.getPosition()), b.getRange());
+        destruct_recursive(Direction.N, Direction.N.nextPosition(b.getPosition()), b.getRange(), b);
+        destruct_recursive(Direction.S, Direction.S.nextPosition(b.getPosition()), b.getRange(), b);
+        destruct_recursive(Direction.W, Direction.W.nextPosition(b.getPosition()), b.getRange(), b);
+        destruct_recursive(Direction.E, Direction.E.nextPosition(b.getPosition()), b.getRange(), b);
     }
 
-    private void destruct_recursive(Direction d, Position pos, int i) {
+    private void destruct_recursive(Direction d, Position pos, int i, Bomb bomb) {
         if (i == 0)
             return;
         Decor de = game.getWorld().get(pos);
-
+        //FOR DECOR
+        if (de != null && !de.canBeMoved() && !de.isCollectable())
+            return;
+        SpriteBomb sb = drawExplosion(pos, bomb);
+        sb.setSprite_nb(0);
+        sb.updateImage();
+        sbomb.add(sb);
+        //FOR BOXES
         if (de != null && (de.canBeMoved())) {
             game.getWorld().deleteDecor(pos);
+            redrawTheSprites();
             return;
         }
-        if (de != null && !de.canBeMoved())
-            return;
 
         if (pos.equals(player.getPosition())) {
             player.removeLife();
@@ -236,13 +244,18 @@ public final class GameEngine {
                     itr.remove();
             }
         }
-        //FOR THE BOXES && BONUS
+        //FOR BONUS
         if (de != null && de.isCollectable())
             game.getWorld().deleteDecor(pos);
         redrawTheSprites();
-        destruct_recursive(d, d.nextPosition(pos), i - 1);
+        destruct_recursive(d, d.nextPosition(pos), i - 1, bomb);
     }
 
+    private SpriteBomb drawExplosion(Position pos, Bomb bomb){
+        Sprite b = SpriteFactory.createBomb(layer, new Bomb(game, pos, 1));
+        bomb.addExplosion(b);
+        return (SpriteBomb) b;
+    }
     private void redrawTheSprites() {
         sprites.forEach(Sprite::remove);
         sprites.clear();
@@ -275,12 +288,14 @@ public final class GameEngine {
             @Override
             public void run() {
                 System.out.println("Task performed on " + new Date());
+                Bomb bo = null;
                 for (int i = 4; i >= 0; i--) {
                     sb.setSprite_nb(i);
                     sb.updateImage();
                     if (i == 0) {
                         for (Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())) {
                             if (b.getPosition().equals(sb.getPosition())) {
+                                bo = b;
                                 b.setExplosion(true);
                             }
                         }
@@ -288,7 +303,9 @@ public final class GameEngine {
                     try {
                         Thread.sleep(1000);
                         if (i == 0) {
+                            Bomb finalBo1 = bo;
                             Platform.runLater(() -> {
+                                sbomb.removeAll(finalBo1.getExplosions());
                                 sbomb.remove(sb);
                                 redrawTheSprites();
                             });

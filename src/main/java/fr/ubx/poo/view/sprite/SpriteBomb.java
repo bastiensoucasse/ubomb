@@ -4,6 +4,8 @@ import fr.ubx.poo.model.go.Bomb;
 import fr.ubx.poo.view.image.ImageFactory;
 import javafx.scene.layout.Pane;
 
+import java.util.ArrayList;
+
 public class SpriteBomb extends SpriteGameObject {
     private int sprite_nb = 4;
     private Bomb b;
