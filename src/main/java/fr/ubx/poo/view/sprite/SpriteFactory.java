@@ -58,6 +58,8 @@ public final class SpriteFactory {
     }
 
     public static Sprite createBomb(Pane layer, Bomb bomb) {
-        return new SpriteBomb(layer, bomb);
+        SpriteBomb b =  new SpriteBomb(layer, bomb);
+        bomb.addExplosion(b);
+        return  b;
     }
 }

@@ -22,6 +22,10 @@ public class Bomb extends GameObject {
         this.explosions = new ArrayList<>();
     }
 
+    public SpriteBomb getSprite(){
+        return explosions.get(0);
+    }
+
     @Override
     public String toString() {
         return "Bomb";
@@ -52,5 +56,9 @@ public class Bomb extends GameObject {
 
     public List<SpriteBomb> getExplosions(){
         return explosions;
+    }
+
+    public void setSprite(SpriteBomb newBomb) {
+        explosions.add(0, newBomb);
     }
 }

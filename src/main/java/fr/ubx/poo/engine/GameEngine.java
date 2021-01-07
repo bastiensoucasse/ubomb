@@ -72,6 +72,17 @@ public final class GameEngine {
             sprites.add(SpriteFactory.createMonster(layer, m));
         }
         spritePlayer = SpriteFactory.createPlayer(layer, player);
+        for(Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())){
+            if(b.isDropped()){
+                SpriteBomb t = b.getSprite().copy(layer);
+                t.updateImage();
+                sbomb.remove(b.getSprite());
+                b.setSprite(t);
+                sbomb.add(t);
+            }
+        }
+        sprites.addAll(sbomb);
+
     }
 
     protected final void buildAndSetGameLoop() {
@@ -176,7 +187,7 @@ public final class GameEngine {
         if (b != null) {
             b.setExplosion(false);
             destruction(b);
-            if(game.getPlayer().wasLastBombed())
+            if(game.getPlayer().wasLastBomb())
                 game.getPlayer().addBomb();
         }
 
@@ -214,7 +225,7 @@ public final class GameEngine {
     }
 
     private void destruct_recursive(Direction d, Position pos, int i, Bomb bomb) {
-        if (i == 0)
+        if (i == 0 || !pos.inside(game.getWorld().getDimension()))
             return;
         Decor de = game.getWorld().get(pos);
         //FOR DECOR
@@ -260,7 +271,7 @@ public final class GameEngine {
         sprites.forEach(Sprite::remove);
         sprites.clear();
 
-        game.getWorld().updateWorld();
+        game.getWorld().cleanCollectible();
         game.getWorld().forEach((pos, d) -> sprites.add(SpriteFactory.createDecor(layer, pos, d)));
         for (Monster m : game.getWorld().getMonsters().get(game.getWorld().getLevel())) {
             sprites.add(SpriteFactory.createMonster(layer, m));
@@ -272,47 +283,46 @@ public final class GameEngine {
         for (Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())) {
             if (!b.isDropped()) {
                 Sprite sb = SpriteFactory.createBomb(layer, b);
+                b.addExplosion(sb);
                 sbomb.add((SpriteBomb) sb);
                 sprites.add(sb);
-                createTimer(sb);
+                createTimer(b);
                 b.setDropped();
             }
         }
     }
 
-    //-------------- WIP -------------------
-    void createTimer(Sprite b) {
-        SpriteBomb sb = (SpriteBomb) b;
+    void createTimer(Bomb b) {
         Timer timer = new Timer("Bomb timer");
         TimerTask timertask = new TimerTask() {
             @Override
             public void run() {
                 System.out.println("Task performed on " + new Date());
                 Bomb bo = null;
+                int level = game.getWorld().getLevel();
                 for (int i = 4; i >= 0; i--) {
-                    sb.setSprite_nb(i);
-                    sb.updateImage();
+                    b.getSprite().setSprite_nb(i);
+                    b.getSprite().updateImage();
                     if (i == 0) {
-                        for (Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())) {
-                            if (b.getPosition().equals(sb.getPosition())) {
+                        b.setExplosion(true);
+                        /*for (Bomb b : game.getWorld().getBombs().get(level)) {
+                            if (b.getPosition().equals(b.getPosition())) {
                                 bo = b;
                                 b.setExplosion(true);
                             }
-                        }
+                        }*/
                     }
                     try {
                         Thread.sleep(1000);
                         if (i == 0) {
-                            Bomb finalBo1 = bo;
+                            game.getWorld().removeBomb(b.getPosition());
                             Platform.runLater(() -> {
-                                sbomb.removeAll(finalBo1.getExplosions());
-                                sbomb.remove(sb);
+                                sbomb.remove(b.getSprite());
+                                sbomb.removeAll(b.getExplosions());
                                 redrawTheSprites();
                             });
-                            game.getWorld().removeBomb(sb.getPosition());
                             timer.cancel();
                         }
-
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

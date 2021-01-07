@@ -1,5 +1,6 @@
 package fr.ubx.poo.game;
 
+import fr.ubx.poo.model.decor.collectible.Collectible;
 import fr.ubx.poo.model.decor.collectible.bonus.Bonus;
 import fr.ubx.poo.model.decor.Decor;
 import fr.ubx.poo.model.decor.door.Door;
@@ -55,7 +56,7 @@ public class World {
     }
 
     public List<Position> findMonster(int level) {
-        List<Position> position_of_monsters = new ArrayList<Position>();
+        List<Position> position_of_monsters = new ArrayList<>();
         for (int x = 0; x < dimension.get(level).width; x++) {
             for (int y = 0; y < dimension.get(level).height; y++) {
                 if (raw.get(level)[y][x] == WorldEntity.Monster) {
@@ -181,12 +182,12 @@ public class World {
         return level;
     }
 
-    public void updateWorld() {
+    public void cleanCollectible() {
         Iterator<Map.Entry<Position, Decor>> itr = grid.get(level).entrySet().iterator();
         while (itr.hasNext()) {
             Map.Entry<Position, Decor> entry = itr.next();
-            if (entry.getValue() instanceof Bonus)
-                if (!((Bonus) entry.getValue()).getVisibility()) {
+            if (entry.getValue().isCollectable())
+                if (!((Collectible) entry.getValue()).getVisibility()) {
                     itr.remove();
                 }
         }
@@ -205,12 +206,7 @@ public class World {
     }
 
     public void removeBomb(Position position) {
-        Iterator<Bomb> it = bombs.get(getLevel()).iterator();
-        while (it.hasNext()) {
-            Bomb u = it.next();
-            if (u.getPosition().equals(position))
-                it.remove();
-        }
+        bombs.get(getLevel()).removeIf(u -> u.getPosition().equals(position));
     }
 
     public Bomb BombExplosed() {

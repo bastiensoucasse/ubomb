@@ -11,6 +11,7 @@ public class SpriteBomb extends SpriteGameObject {
     private Bomb b;
     public SpriteBomb(Pane layer, Bomb bomb) {
         super(layer,null,  bomb);
+        this.b = bomb;
         updateImage();
     }
 
@@ -18,6 +19,12 @@ public class SpriteBomb extends SpriteGameObject {
     public void updateImage() {
         Bomb b = (Bomb) go;
         setImage(ImageFactory.getInstance().getBomb(sprite_nb));
+    }
+
+    public SpriteBomb copy(Pane layer){
+        SpriteBomb s = new SpriteBomb(layer, this.b);
+        s.setSprite_nb(this.sprite_nb);
+        return s;
     }
 
     public void setSprite_nb(int n){

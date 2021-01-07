@@ -98,7 +98,7 @@ public class Player extends Character {
         Bomb bomb = new Bomb(game, getPosition(), getBombsRange());
         removeBomb();
         bombDropped = true;
-        if(getBombs() < 1);
+        if(getBombs() < 1)
             lastBomb = true;
         return bomb;
     }
@@ -204,7 +204,7 @@ public class Player extends Character {
         return bombDropped;
     }
 
-    public boolean wasLastBombed(){
+    public boolean wasLastBomb(){
         return lastBomb;
     }
 
