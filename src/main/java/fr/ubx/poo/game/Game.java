@@ -47,8 +47,8 @@ public class Game {
         return world;
     }
 
-    public void createMonsters(){
-        for(int i=0; i<getWorld().getRaw().size(); i++){
+    public void createMonsters() {
+        for (int i = 0; i < getWorld().getRaw().size(); i++) {
             List<Position> pos_of_monster = getWorld().findMonster(i);
             for (Position pos : pos_of_monster) {
                 world.getMonsters().get(i).add(new Monster(this, pos));

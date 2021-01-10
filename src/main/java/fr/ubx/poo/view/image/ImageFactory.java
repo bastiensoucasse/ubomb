@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2020. Laurent Réveillère
- */
-
 package fr.ubx.poo.view.image;
 
 import fr.ubx.poo.game.Direction;
@@ -65,7 +61,7 @@ public final class ImageFactory {
         return get(directions[direction.ordinal()]);
     }
 
-    public Image getMonster(Direction dir){
+    public Image getMonster(Direction dir) {
         return get(direction_for_monsters[dir.ordinal()]);
     }
 

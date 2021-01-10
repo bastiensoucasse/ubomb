@@ -83,11 +83,11 @@ public class Player extends Character {
         safe = true;
 
         new java.util.Timer().schedule(new java.util.TimerTask() {
-                    @Override
-                    public void run() {
-                        safe = false;
-                    }
-                }, 1000);
+            @Override
+            public void run() {
+                safe = false;
+            }
+        }, 1000);
     }
 
     public Bomb dropBomb() {
@@ -201,8 +201,8 @@ public class Player extends Character {
         return bombDropped;
     }
 
-    public boolean wasLastBomb(){
-        return bombs==0;
+    public boolean wasLastBomb() {
+        return bombs == 0;
     }
 
     public void setBombDropped(boolean b) {

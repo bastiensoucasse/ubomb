@@ -73,8 +73,8 @@ public final class GameEngine {
         }
         spritePlayer = SpriteFactory.createPlayer(layer, player);
         //Bomb sprite when charging/switching level
-        for(Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())){
-            if(b.isDropped()){
+        for (Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())) {
+            if (b.isDropped()) {
                 SpriteBomb t = b.getSprite().copy(layer);
                 t.updateImage();
                 sbomb.remove(b.getSprite());
@@ -188,7 +188,7 @@ public final class GameEngine {
         if (b != null) {
             b.setExplosion(false);
             destruction(b);
-            if(game.getPlayer().wasLastBomb())
+            if (game.getPlayer().wasLastBomb())
                 game.getPlayer().addBomb();
         }
 
@@ -263,11 +263,12 @@ public final class GameEngine {
         destruct_recursive(d, d.nextPosition(pos), i - 1, bomb);
     }
 
-    private SpriteBomb drawExplosion(Position pos, Bomb bomb){
+    private SpriteBomb drawExplosion(Position pos, Bomb bomb) {
         Sprite b = SpriteFactory.createBomb(layer, new Bomb(game, pos, 1));
         bomb.addExplosion(b);
         return (SpriteBomb) b;
     }
+
     private void redrawTheSprites() {
         sprites.forEach(Sprite::remove);
         sprites.clear();

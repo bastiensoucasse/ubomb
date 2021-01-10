@@ -33,9 +33,13 @@ public abstract class Decor extends Entity {
         this.walkable = walkable;
     }
 
-    public boolean canGetThrough() { return false; }
+    public boolean canGetThrough() {
+        return false;
+    }
 
-    public boolean canBeMoved() {return false;}
+    public boolean canBeMoved() {
+        return false;
+    }
 
     public boolean isOpenable(final Player player) {
         return false;
