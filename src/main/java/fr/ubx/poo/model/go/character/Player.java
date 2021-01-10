@@ -78,7 +78,6 @@ public class Player extends Character {
             System.out.println("Safe for now!");
             return;
         }
-
         lives--;
         safe = true;
 

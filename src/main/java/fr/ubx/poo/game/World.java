@@ -204,8 +204,8 @@ public class World {
         return raw;
     }
 
-    public void removeBomb(Position position) {
-        bombs.get(getLevel()).removeIf(u -> u.getPosition().equals(position));
+    public void removeBomb(Position position, int lvl) {
+        bombs.get(lvl).removeIf(u -> u.getPosition().equals(position));
     }
 
     public Bomb BombExplosed() {
