@@ -72,6 +72,7 @@ public final class GameEngine {
             sprites.add(SpriteFactory.createMonster(layer, m));
         }
         spritePlayer = SpriteFactory.createPlayer(layer, player);
+        //Bomb sprite when charging/switching level
         for(Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())){
             if(b.isDropped()){
                 SpriteBomb t = b.getSprite().copy(layer);
@@ -297,25 +298,17 @@ public final class GameEngine {
         TimerTask timertask = new TimerTask() {
             @Override
             public void run() {
-                System.out.println("Task performed on " + new Date());
-                Bomb bo = null;
-                int level = game.getWorld().getLevel();
                 for (int i = 4; i >= 0; i--) {
                     b.getSprite().setSprite_nb(i);
                     b.getSprite().updateImage();
                     if (i == 0) {
                         b.setExplosion(true);
-                        /*for (Bomb b : game.getWorld().getBombs().get(level)) {
-                            if (b.getPosition().equals(b.getPosition())) {
-                                bo = b;
-                                b.setExplosion(true);
-                            }
-                        }*/
                     }
                     try {
                         Thread.sleep(1000);
                         if (i == 0) {
                             game.getWorld().removeBomb(b.getPosition());
+                            //delete the sprites of the bomb
                             Platform.runLater(() -> {
                                 sbomb.remove(b.getSprite());
                                 sbomb.removeAll(b.getExplosions());
@@ -335,7 +328,6 @@ public final class GameEngine {
     private void render() {
         sprites.forEach(Sprite::render);
         spritePlayer.render();
-
         statusBar.update(game);
     }
 

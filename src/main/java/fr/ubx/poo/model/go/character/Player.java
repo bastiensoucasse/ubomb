@@ -18,7 +18,6 @@ public class Player extends Character {
     private int bombs;
     private int bombsRange;
     private boolean bombDropped = false;
-    private boolean lastBomb = false;
     private boolean safe = false;
 
     public Player(final Game game, final Position position) {
@@ -98,8 +97,6 @@ public class Player extends Character {
         Bomb bomb = new Bomb(game, getPosition(), getBombsRange());
         removeBomb();
         bombDropped = true;
-        if(getBombs() < 1)
-            lastBomb = true;
         return bomb;
     }
 
@@ -205,7 +202,7 @@ public class Player extends Character {
     }
 
     public boolean wasLastBomb(){
-        return lastBomb;
+        return bombs==0;
     }
 
     public void setBombDropped(boolean b) {

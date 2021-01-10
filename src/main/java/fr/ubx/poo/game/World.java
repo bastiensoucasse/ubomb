@@ -1,7 +1,6 @@
 package fr.ubx.poo.game;
 
 import fr.ubx.poo.model.decor.collectible.Collectible;
-import fr.ubx.poo.model.decor.collectible.bonus.Bonus;
 import fr.ubx.poo.model.decor.Decor;
 import fr.ubx.poo.model.decor.door.Door;
 import fr.ubx.poo.model.decor.door.DoorDestination;
@@ -211,7 +210,7 @@ public class World {
 
     public Bomb BombExplosed() {
         for (Bomb b : bombs.get(getLevel())) {
-            if (b.hasExplosed())
+            if (b.hasExplodes())
                 return b;
         }
         return null;

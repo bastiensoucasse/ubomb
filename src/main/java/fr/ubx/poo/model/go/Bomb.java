@@ -39,7 +39,7 @@ public class Bomb extends GameObject {
         dropped = true;
     }
 
-    public boolean hasExplosed(){
+    public boolean hasExplodes(){
         return hasExplosed;
     }
     public void setExplosion(boolean b){
