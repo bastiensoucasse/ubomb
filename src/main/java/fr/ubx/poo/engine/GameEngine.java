@@ -31,6 +31,7 @@ public final class GameEngine {
     private final Player player;
     private final List<Sprite> sprites = new ArrayList<>();
     private final List<SpriteBomb> sbomb = new ArrayList<>();
+    private final Map<Bomb, List<SpriteBomb>> explosions = new HashMap<>();
     private StatusBar statusBar;
     private Pane layer;
     private Input input;
@@ -75,10 +76,10 @@ public final class GameEngine {
         //Bomb sprite when charging/switching level
         for (Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())) {
             if (b.isDropped()) {
-                SpriteBomb t = b.getSprite().copy(layer);
+                SpriteBomb t = explosions.get(b).get(0).copy(layer);
                 t.updateImage();
-                sbomb.remove(b.getSprite());
-                b.setSprite(t);
+                sbomb.remove(explosions.get(b).get(0));
+                explosions.get(b).add(0, t);
                 sbomb.add(t);
             }
         }
@@ -219,6 +220,8 @@ public final class GameEngine {
     }
 
     private void destruction(Bomb b) {
+        if(game.getWorld().isThereAMonster(b.getPosition()))
+            game.getWorld().deleteMonster(b.getPosition());
         destruct_recursive(Direction.N, Direction.N.nextPosition(b.getPosition()), b.getRange(), b);
         destruct_recursive(Direction.S, Direction.S.nextPosition(b.getPosition()), b.getRange(), b);
         destruct_recursive(Direction.W, Direction.W.nextPosition(b.getPosition()), b.getRange(), b);
@@ -247,15 +250,7 @@ public final class GameEngine {
             player.removeLife();
         }
         //MONSTER ANIHILATION
-        Iterator<Monster> itr = game.getWorld().getMonsters().get(game.getWorld().getLevel()).iterator();
-        while (itr.hasNext()) {
-            Monster u = itr.next();
-            if (u.getPosition().equals(pos)) {
-                u.removeLife();
-                if (u.getLives() == 0)
-                    itr.remove();
-            }
-        }
+        game.getWorld().deleteMonster(pos);
         //FOR BONUS
         if (de != null && de.isCollectable())
             game.getWorld().deleteDecor(pos);
@@ -265,7 +260,7 @@ public final class GameEngine {
 
     private SpriteBomb drawExplosion(Position pos, Bomb bomb) {
         Sprite b = SpriteFactory.createBomb(layer, new Bomb(game, pos, 1));
-        bomb.addExplosion(b);
+        explosions.get(bomb).add((SpriteBomb)b);
         return (SpriteBomb) b;
     }
 
@@ -285,9 +280,10 @@ public final class GameEngine {
         for (Bomb b : game.getWorld().getBombs().get(game.getWorld().getLevel())) {
             if (!b.isDropped()) {
                 Sprite sb = SpriteFactory.createBomb(layer, b);
-                b.addExplosion(sb);
-                sbomb.add((SpriteBomb) sb);
+                explosions.put(b, new ArrayList<>());
+                explosions.get(b).add((SpriteBomb) sb);
                 sprites.add(sb);
+                sbomb.add((SpriteBomb)sb);
                 createTimer(b);
                 b.setDropped();
             }
@@ -301,8 +297,8 @@ public final class GameEngine {
             public void run() {
                 int lvl = game.getWorld().getLevel();
                 for (int i = 4; i >= 0; i--) {
-                    b.getSprite().setSprite_nb(i);
-                    b.getSprite().updateImage();
+                    explosions.get(b).get(0).setSprite_nb(i);
+                    explosions.get(b).get(0).updateImage();
                     if (i == 0) {
                         b.setExplosion(true);
                     }
@@ -312,8 +308,7 @@ public final class GameEngine {
                             game.getWorld().removeBomb(b.getPosition(), lvl);
                             //delete the sprites of the bomb
                             Platform.runLater(() -> {
-                                sbomb.remove(b.getSprite());
-                                sbomb.removeAll(b.getExplosions());
+                                sbomb.removeAll(explosions.get(b));
                                 redrawTheSprites();
                             });
                             timer.cancel();

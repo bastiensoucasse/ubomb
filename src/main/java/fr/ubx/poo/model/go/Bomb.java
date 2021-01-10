@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Bomb extends GameObject {
-    private List<SpriteBomb> explosions;
     private final int range;
     private boolean dropped;
     private boolean hasExplosed = false;
@@ -17,12 +16,8 @@ public class Bomb extends GameObject {
     public Bomb(final Game game, final Position position, final int range) {
         super(game, position);
         this.range = range;
-        this.explosions = new ArrayList<>();
     }
 
-    public SpriteBomb getSprite() {
-        return explosions.get(0);
-    }
 
     @Override
     public String toString() {
@@ -49,15 +44,4 @@ public class Bomb extends GameObject {
         return range;
     }
 
-    public void addExplosion(Sprite b) {
-        explosions.add((SpriteBomb) b);
-    }
-
-    public List<SpriteBomb> getExplosions() {
-        return explosions;
-    }
-
-    public void setSprite(SpriteBomb newBomb) {
-        explosions.add(0, newBomb);
-    }
 }

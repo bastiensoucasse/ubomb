@@ -76,6 +76,18 @@ public class World {
         return false;
     }
 
+    public void deleteMonster(Position pos){
+        Iterator<Monster> itr = getMonsters().get(getLevel()).iterator();
+        while (itr.hasNext()) {
+            Monster u = itr.next();
+            if (u.getPosition().equals(pos)) {
+                u.removeLife();
+                if (u.getLives() == 0)
+                    itr.remove();
+            }
+        }
+    }
+
     public boolean isThereABomb(Position position) {
         if (!position.inside(dimension.get(level))) return false;
 
