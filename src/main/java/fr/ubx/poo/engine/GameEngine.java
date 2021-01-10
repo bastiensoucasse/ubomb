@@ -298,6 +298,7 @@ public final class GameEngine {
         TimerTask timertask = new TimerTask() {
             @Override
             public void run() {
+                int lvl = game.getWorld().getLevel();
                 for (int i = 4; i >= 0; i--) {
                     b.getSprite().setSprite_nb(i);
                     b.getSprite().updateImage();
@@ -307,7 +308,7 @@ public final class GameEngine {
                     try {
                         Thread.sleep(1000);
                         if (i == 0) {
-                            game.getWorld().removeBomb(b.getPosition());
+                            game.getWorld().removeBomb(b.getPosition(), lvl);
                             //delete the sprites of the bomb
                             Platform.runLater(() -> {
                                 sbomb.remove(b.getSprite());
